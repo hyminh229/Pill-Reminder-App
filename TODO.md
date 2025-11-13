@@ -126,15 +126,17 @@
   - Hoàn thành onboarding và đánh dấu first launch = false
 
 ### 6. Màn hình chính (HomeScreen)
-**Người nhận:** ___  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟡 Trung bình  
 **Thời gian ước tính:** 4-5 giờ
 
-- [ ] **HomeViewModel.kt**
+- [x] **HomeViewModel.kt**
   - State: list of medicines, overdue medicines, today's schedule
   - Functions: loadMedicines(), markAsTaken(), markAsSkipped(), deleteMedicine()
   - Sử dụng StateFlow/Flow từ Repository
-- [ ] **HomeScreen.kt** - UI
+  - MedicineReminder data class với ReminderStatus enum
+  - Logic tính toán status dựa trên history và time
+- [x] **HomeScreen.kt** - UI
   - Top app bar với logo pills và title "Pills Reminder"
   - Section "Overdue" với danh sách thuốc quá hạn
   - Section "Today's Schedule" với danh sách thuốc hôm nay
@@ -143,6 +145,10 @@
   - FAB button (+) để thêm thuốc mới
   - Bottom navigation bar (Home, Progress, Setting)
   - Empty state khi chưa có thuốc
+- [x] **ReminderCard.kt** - Component hiển thị thông tin thuốc
+  - Medicine name, reminder time, status badge
+  - Checkbox/checkmark với interaction
+  - Arrow icon để navigate
 
 ### 7. Màn hình thêm/sửa thuốc (AddMedScreen)
 **Người nhận:** ___  
