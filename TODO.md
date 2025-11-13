@@ -119,10 +119,11 @@
   - Title "All done!"
   - Party popper emojis (🎉🎉🎉)
   - Button "Let's go"
-- [ ] **OnboardingViewModel.kt** - Quản lý state onboarding
+- [x] **OnboardingViewModel.kt** - Quản lý state onboarding
   - Lưu nickname vào PreferencesManager
   - Lưu reminder tone preference
   - Check first launch để quyết định hiển thị onboarding
+  - Hoàn thành onboarding và đánh dấu first launch = false
 
 ### 6. Màn hình chính (HomeScreen)
 **Người nhận:** ___  

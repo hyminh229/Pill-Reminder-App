@@ -1,18 +1,26 @@
 package nhom8.uth.pillreminderapp.navigation
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import nhom8.uth.pillreminderapp.ui.screens.add_med.AddMedScreen
 import nhom8.uth.pillreminderapp.ui.screens.home.HomeScreen
 import nhom8.uth.pillreminderapp.ui.screens.onboarding.AllDoneScreen
 import nhom8.uth.pillreminderapp.ui.screens.onboarding.GetStartedScreen
 import nhom8.uth.pillreminderapp.ui.screens.onboarding.NicknameScreen
 import nhom8.uth.pillreminderapp.ui.screens.onboarding.NotificationPermissionScreen
+import nhom8.uth.pillreminderapp.ui.screens.onboarding.OnboardingViewModel
 import nhom8.uth.pillreminderapp.ui.screens.onboarding.ReminderToneScreen
 import nhom8.uth.pillreminderapp.ui.screens.settings.SettingScreen
 import nhom8.uth.pillreminderapp.ui.screens.splash.SplashScreen
@@ -22,12 +30,16 @@ import nhom8.uth.pillreminderapp.ui.screens.statistics.StatisticsScreen
  * Navigation graph cho ứng dụng
  * Quản lý điều hướng giữa các màn hình
  */
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.Splash.route,
     modifier: Modifier = Modifier
 ) {
+    val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    val isFirstLaunch by onboardingViewModel.isFirstLaunch.collectAsStateWithLifecycle()
+    
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -38,9 +50,15 @@ fun AppNavigation(
         composable(Screen.Splash.route) {
             SplashScreen(
                 onNavigateToNext = {
-                    // TODO: Check if first launch, navigate to GetStarted or Home
-                    navController.navigate(Screen.GetStarted.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    // Check if first launch, navigate to GetStarted or Home
+                    if (onboardingViewModel.checkFirstLaunch()) {
+                        navController.navigate(Screen.GetStarted.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
                     }
                 }
             )
@@ -57,7 +75,8 @@ fun AppNavigation(
         composable(Screen.Nickname.route) {
             NicknameScreen(
                 onNext = { nickname ->
-                    // TODO: Save nickname
+                    // Save nickname
+                    onboardingViewModel.saveNickname(nickname)
                     navController.navigate(Screen.ReminderTone.route)
                 },
                 onBack = {
@@ -69,7 +88,8 @@ fun AppNavigation(
         composable(Screen.ReminderTone.route) {
             ReminderToneScreen(
                 onNext = { tone ->
-                    // TODO: Save reminder tone
+                    // Save reminder tone
+                    onboardingViewModel.saveReminderTone(tone)
                     navController.navigate(Screen.NotificationPermission.route)
                 },
                 onBack = {
@@ -79,9 +99,21 @@ fun AppNavigation(
         }
         
         composable(Screen.NotificationPermission.route) {
+            // Request notification permission (Android 13+)
+            val notificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                rememberMultiplePermissionsState(
+                    permissions = listOf(Manifest.permission.POST_NOTIFICATIONS)
+                )
+            } else {
+                null
+            }
+            
             NotificationPermissionScreen(
                 onAllow = {
-                    // TODO: Request notification permission
+                    // Request notification permission
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && notificationPermission != null) {
+                        notificationPermission.launchMultiplePermissionRequest()
+                    }
                     navController.navigate(Screen.AllDone.route)
                 },
                 onSkip = {
@@ -93,6 +125,8 @@ fun AppNavigation(
         composable(Screen.AllDone.route) {
             AllDoneScreen(
                 onLetsGo = {
+                    // Complete onboarding
+                    onboardingViewModel.completeOnboarding()
                     navController.navigate(Screen.Home.route) {
                         // Clear onboarding stack
                         popUpTo(Screen.Splash.route) { inclusive = true }
