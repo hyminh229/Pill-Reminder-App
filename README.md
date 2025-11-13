@@ -15,13 +15,14 @@ Dự án được phát triển cho học phần **Lập trình Thiết bị Di 
 ## 📋 Giới thiệu ngắn
 
 **Pill Reminder App** là ứng dụng Android được xây dựng để giúp người dùng:
-- Quản lý thông tin các loại thuốc cần uống
-- Thiết lập lịch nhắc nhở uống thuốc tự động
-- Theo dõi lịch sử uống thuốc
-- Xem thống kê và báo cáo về việc tuân thủ lịch uống thuốc
+- Quản lý thông tin các loại thuốc cần uống với form chi tiết (tên, liều lượng, đơn vị, lời khuyên uống)
+- Thiết lập lịch nhắc nhở uống thuốc tự động với nhiều thời điểm trong ngày
+- Theo dõi lịch sử uống thuốc với trạng thái (taken/missed/skipped)
+- Xem thống kê và báo cáo về việc tuân thủ lịch uống thuốc qua biểu đồ và danh sách
 - Nhận thông báo nhắc nhở kịp thời qua WorkManager
+- Onboarding flow thân thiện cho người dùng mới
 
-Ứng dụng được thiết kế với giao diện hiện đại, dễ sử dụng và đảm bảo tính ổn định cao trong việc nhắc nhở người dùng.
+Ứng dụng được thiết kế với giao diện hiện đại, màu sắc nhẹ nhàng (light blue theme), dễ sử dụng và đảm bảo tính ổn định cao trong việc nhắc nhở người dùng.
 
 ---
 
@@ -106,6 +107,17 @@ Pill-Reminder-App/
 │       │   │   │   │   └── WeeklyTracker.kt       # Theo dõi tuần
 │       │   │   │   │
 │       │   │   │   ├── screens/                    # Các màn hình chính
+│       │   │   │   │   ├── splash/                 # Màn hình splash
+│       │   │   │   │   │   └── SplashScreen.kt     # UI màn hình splash
+│       │   │   │   │   │
+│       │   │   │   │   ├── onboarding/             # Onboarding flow
+│       │   │   │   │   │   ├── GetStartedScreen.kt # Màn hình giới thiệu
+│       │   │   │   │   │   ├── NicknameScreen.kt   # Nhập tên người dùng
+│       │   │   │   │   │   ├── ReminderToneScreen.kt # Chọn âm thanh nhắc nhở
+│       │   │   │   │   │   ├── NotificationPermissionScreen.kt # Yêu cầu quyền thông báo
+│       │   │   │   │   │   ├── AllDoneScreen.kt    # Hoàn thành onboarding
+│       │   │   │   │   │   └── OnboardingViewModel.kt # ViewModel quản lý onboarding
+│       │   │   │   │   │
 │       │   │   │   │   ├── home/                   # Màn hình chính
 │       │   │   │   │   │   ├── HomeScreen.kt       # UI màn hình home
 │       │   │   │   │   │   └── HomeViewModel.kt    # ViewModel xử lý logic
@@ -114,13 +126,13 @@ Pill-Reminder-App/
 │       │   │   │   │   │   ├── AddMedScreen.kt    # UI màn hình thêm thuốc
 │       │   │   │   │   │   └── AddMedViewModel.kt  # ViewModel xử lý logic
 │       │   │   │   │   │
-│       │   │   │   │   ├── history/                # Màn hình lịch sử
+│       │   │   │   │   ├── statistics/             # Màn hình thống kê/tiến độ
+│       │   │   │   │   │   ├── StatisticsScreen.kt # UI màn hình thống kê (Charts & List tabs)
+│       │   │   │   │   │   └── StatisticsViewModel.kt # ViewModel xử lý logic
+│       │   │   │   │   │
+│       │   │   │   │   ├── history/                # Màn hình lịch sử (optional)
 │       │   │   │   │   │   ├── HistoryScreen.kt   # UI màn hình lịch sử
 │       │   │   │   │   │   └── HistoryViewModel.kt # ViewModel xử lý logic
-│       │   │   │   │   │
-│       │   │   │   │   ├── statistics/             # Màn hình thống kê
-│       │   │   │   │   │   ├── StatisticsScreen.kt # UI màn hình thống kê
-│       │   │   │   │   │   └── StatisticsViewModel.kt # ViewModel xử lý logic
 │       │   │   │   │   │
 │       │   │   │   │   └── settings/                # Màn hình cài đặt
 │       │   │   │   │       └── SettingScreen.kt    # UI màn hình cài đặt
@@ -133,7 +145,8 @@ Pill-Reminder-App/
 │       │   │   ├── util/                           # Utilities và helpers
 │       │   │   │   ├── AlarmScheduler.kt           # Lên lịch báo thức nhắc nhở
 │       │   │   │   ├── Constants.kt                # Hằng số của ứng dụng
-│       │   │   │   └── NotificationHelper.kt        # Helper cho thông báo
+│       │   │   │   ├── NotificationHelper.kt        # Helper cho thông báo
+│       │   │   │   └── PreferencesManager.kt        # Quản lý SharedPreferences/DataStore
 │       │   │   │
 │       │   │   └── workers/                        # Background workers
 │       │   │       └── ReminderWorker.kt           # Worker xử lý nhắc nhở (WorkManager)
@@ -196,14 +209,15 @@ Pill-Reminder-App/
 - **Database**: `AppDatabase` - Room database với các DAO
 
 ### View Layer
-- **Compose Screens**: `HomeScreen`, `AddMedScreen`, `HistoryScreen`, `StatisticsScreen`, `SettingScreen` - UI components
+- **Onboarding Screens**: `SplashScreen`, `GetStartedScreen`, `NicknameScreen`, `ReminderToneScreen`, `NotificationPermissionScreen`, `AllDoneScreen` - Hướng dẫn người dùng lần đầu
+- **Compose Screens**: `HomeScreen`, `AddMedScreen`, `StatisticsScreen`, `SettingScreen` - UI components
 - **Compose Components**: `ReminderCard`, `StatPieChart`, `WeeklyTracker` - Reusable components
 
 ### ViewModel Layer
-- **HomeViewModel**: Quản lý logic cho màn hình chính
-- **AddMedViewModel**: Xử lý logic thêm/sửa thuốc
-- **HistoryViewModel**: Quản lý logic hiển thị lịch sử
-- **StatisticsViewModel**: Xử lý logic tính toán và hiển thị thống kê
+- **OnboardingViewModel**: Quản lý state và logic cho onboarding flow
+- **HomeViewModel**: Quản lý logic cho màn hình chính (Overdue & Today's Schedule)
+- **AddMedViewModel**: Xử lý logic thêm/sửa thuốc với form validation
+- **StatisticsViewModel**: Xử lý logic tính toán và hiển thị thống kê (Charts & List views)
 
 ### Data Flow
 1. **View** → **ViewModel**: User actions (click, input)
@@ -246,20 +260,31 @@ cd Pill-Reminder-App
 ## 📱 Tính năng chính
 
 ### ✅ Đã hoàn thành
-- [ ] Cấu trúc project MVVM với Jetpack Compose
-- [ ] Tích hợp Room Database
-- [ ] Hilt Dependency Injection
-- [ ] Navigation Compose
-- [ ] WorkManager cho nhắc nhở
-- [ ] Material 3 Theme
+- [x] Thiết kế UI/UX trên Figma
+- [x] Setup project và cấu hình dependencies
+- [x] Cấu trúc project MVVM với Jetpack Compose
+- [x] Tích hợp Room Database
+- [x] Hilt Dependency Injection
+- [x] Material 3 Theme
 
 ### 🚧 Đang phát triển / Cần hoàn thiện
-- [ ] Màn hình thêm/sửa thuốc (AddMedScreen)
-- [ ] Màn hình lịch sử (HistoryScreen)
-- [ ] Màn hình chính (HomeScreen) với danh sách thuốc
-- [ ] Màn hình thống kê (StatisticsScreen)
-- [ ] Logic lên lịch nhắc nhở
+
+#### Onboarding Flow
+- [ ] Màn hình Splash với logo và loading
+- [ ] Màn hình Get Started giới thiệu ứng dụng
+- [ ] Màn hình nhập Nickname
+- [ ] Màn hình chọn Reminder Tone
+- [ ] Màn hình yêu cầu Notification Permission
+- [ ] Màn hình All Done hoàn thành onboarding
+
+#### Core Features
+- [ ] Màn hình chính (HomeScreen) với Overdue và Today's Schedule
+- [ ] Màn hình thêm/sửa thuốc (AddMedScreen) với form đầy đủ
+- [ ] Màn hình thống kê (StatisticsScreen) với Charts và List views
 - [ ] Màn hình cài đặt (SettingScreen)
+- [ ] Navigation Compose với bottom navigation
+- [ ] Logic lên lịch nhắc nhở với WorkManager
+- [ ] ReminderCard component hiển thị thông tin thuốc
 
 ---
 
@@ -278,13 +303,30 @@ androidx.navigation:navigation-compose:2.7.7
 // Database
 androidx.room:room-runtime:2.6.1
 androidx.room:room-ktx:2.6.1
+androidx.room:room-compiler:2.6.1 (KSP)
 
 // Background Work
 androidx.work:work-runtime-ktx:2.9.0
 
 // Dependency Injection
 com.google.dagger:hilt-android:2.51.1
+com.google.dagger:hilt-compiler:2.51.1 (KSP)
+
+// DataStore (cho preferences - optional)
+androidx.datastore:datastore-preferences:1.0.0
 ```
+
+## 🎨 Thiết kế UI
+
+Ứng dụng sử dụng thiết kế Material 3 với:
+- **Màu chủ đạo**: Light blue (#E3F2FD và các biến thể)
+- **Typography**: Material 3 typography system
+- **Components**: 
+  - Bottom Navigation Bar với 3 tabs: Home, Progress, Setting
+  - Reminder Cards với status indicators
+  - Donut Chart cho thống kê
+  - Form inputs với validation
+- **Onboarding Flow**: 6 màn hình hướng dẫn người dùng mới
 
 
 

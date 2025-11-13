@@ -1,0 +1,53 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="375dp"
+    android:height="375dp"
+    android:viewportWidth="375"
+    android:viewportHeight="375">
+    
+    <!-- White circle background (stopwatch face) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 114.035156 114.035156 L 260.964844 114.035156 L 260.964844 260.964844 L 114.035156 260.964844 Z M 114.035156 114.035156 "
+        android:fillType="evenOdd"/>
+    
+    <!-- Stopwatch crown -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 168.058594 94.722656 L 206.949219 94.722656 L 206.949219 108.472656 L 168.058594 108.472656 Z M 168.058594 94.722656 "/>
+    
+    <!-- Blue pill (horizontal) -->
+    <path
+        android:fillColor="#8ACAEF"
+        android:pathData="M 202.351562 214.550781 L 157.769531 214.550781 C 149.378906 214.550781 142.515625 207.664062 142.515625 199.246094 C 142.515625 190.832031 149.378906 183.945312 157.769531 183.945312 L 202.351562 183.945312 C 210.738281 183.945312 217.601562 190.832031 217.601562 199.246094 C 217.601562 207.664062 210.738281 214.550781 202.351562 214.550781 "
+        android:fillType="evenOdd"/>
+    
+    <!-- Red pill (diagonal) -->
+    <path
+        android:fillColor="#F14F62"
+        android:pathData="M 202.351562 183.945312 L 180.054688 183.945312 L 180.054688 214.550781 L 202.351562 214.550781 C 210.738281 214.550781 217.601562 207.664062 217.601562 199.246094 C 217.601562 190.832031 210.738281 183.945312 202.351562 183.945312 "
+        android:fillType="evenOdd"/>
+    
+    <!-- Red pill (angled) -->
+    <path
+        android:fillColor="#F14F62"
+        android:pathData="M 200.867188 161.34375 L 193.15625 182.324219 L 221.785156 192.914062 L 229.492188 171.925781 C 232.394531 164.03125 228.328125 155.1875 220.453125 152.273438 C 212.585938 149.363281 203.769531 153.445312 200.867188 161.34375 "
+        android:fillType="evenOdd"/>
+    
+    <!-- Clock markers (simplified - 12, 3, 6, 9 positions) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M 186.890625 121.199219 L 188.261719 121.199219 L 188.261719 128.0625 L 186.890625 128.0625 Z"/>
+    
+    <path
+        android:fillColor="#000000"
+        android:pathData="M 186.890625 247.089844 L 188.261719 247.089844 L 188.261719 253.949219 L 186.890625 253.949219 Z"/>
+    
+    <path
+        android:fillColor="#000000"
+        android:pathData="M 121.199219 186.890625 L 128.0625 186.890625 L 128.0625 188.261719 L 121.199219 188.261719 Z"/>
+    
+    <path
+        android:fillColor="#000000"
+        android:pathData="M 247.089844 186.890625 L 253.949219 186.890625 L 253.949219 188.261719 L 247.089844 188.261719 Z"/>
+</vector>
+

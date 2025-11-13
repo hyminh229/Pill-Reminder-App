@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Define colorControlNormal attribute for drawable resources -->
+    <attr name="colorControlNormal" format="color" />
+</resources>
+

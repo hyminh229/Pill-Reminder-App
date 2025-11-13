@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.PillReminderApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Base theme -->
+    <style name="Theme.PillReminderApp" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Define colorControlNormal attribute for drawable resources -->
+        <item name="colorControlNormal">@android:color/black</item>
+        <!-- Additional Material attributes -->
+        <item name="android:colorControlNormal">@android:color/black</item>
+    </style>
 </resources>

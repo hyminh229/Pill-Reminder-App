@@ -1,8 +1,17 @@
 package nhom8.uth.pillreminderapp.ui.screens.statistics
 
-// TODO: Implement StatisticsScreen
-// - Hiển thị biểu đồ thống kê (StatPieChart)
-// - Hiển thị weekly tracker (WeeklyTracker)
-// - Thống kê tỷ lệ tuân thủ
-// - Thống kê theo thời gian
+import androidx.compose.runtime.Composable
 
+/**
+ * Màn hình Statistics - Hiển thị thống kê và biểu đồ
+ */
+@Composable
+fun StatisticsScreen(
+    onNavigateToHome: () -> Unit,
+    onNavigateToSettings: () -> Unit
+) {
+    // TODO: Implement StatisticsScreen UI
+    // - Tab "Charts": Donut chart với data list
+    // - Tab "List": LazyColumn với history items
+    // - Bottom navigation bar (Home, Progress active, Setting)
+}
