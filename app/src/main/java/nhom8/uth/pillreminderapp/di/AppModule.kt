@@ -15,6 +15,7 @@ import nhom8.uth.pillreminderapp.data.repository.MedicineRepository
 import nhom8.uth.pillreminderapp.data.repository.MedicineRepositoryImpl
 import nhom8.uth.pillreminderapp.util.NotificationHelper
 import nhom8.uth.pillreminderapp.util.PreferencesManager
+import nhom8.uth.pillreminderapp.util.SoundHelper
 import javax.inject.Singleton
 
 /**
@@ -85,6 +86,15 @@ abstract class AppModule {
         @Singleton
         fun provideNotificationHelper(@ApplicationContext context: Context): NotificationHelper {
             return NotificationHelper(context)
+        }
+        
+        /**
+         * Provides SoundHelper
+         */
+        @Provides
+        @Singleton
+        fun provideSoundHelper(@ApplicationContext context: Context): SoundHelper {
+            return SoundHelper(context)
         }
         
         // Note: AlarmScheduler has @Inject constructor with @ApplicationContext,

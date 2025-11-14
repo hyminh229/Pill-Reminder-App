@@ -20,6 +20,7 @@ class PreferencesManager(context: Context) {
         private const val KEY_FIRST_LAUNCH = "first_launch"
         private const val KEY_NICKNAME = "nickname"
         private const val KEY_REMINDER_TONE = "reminder_tone"
+        private const val KEY_REMINDER_TONE_URI = "reminder_tone_uri"
         private const val KEY_THEME = "theme"
     }
 
@@ -34,6 +35,11 @@ class PreferencesManager(context: Context) {
     var reminderTone: String
         get() = prefs.getString(KEY_REMINDER_TONE, "Meow meow") ?: "Meow meow"
         set(value) = prefs.edit().putString(KEY_REMINDER_TONE, value).apply()
+    
+    // Lưu reminder tone URI (để sử dụng với RingtoneManager)
+    var reminderToneUri: String?
+        get() = prefs.getString(KEY_REMINDER_TONE_URI, null)
+        set(value) = prefs.edit().putString(KEY_REMINDER_TONE_URI, value).apply()
 
     var theme: String
         get() = prefs.getString(KEY_THEME, "Light") ?: "Light"

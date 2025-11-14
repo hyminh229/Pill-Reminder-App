@@ -11,6 +11,7 @@
 - [x] HomeScreen (HomeViewModel, HomeScreen, ReminderCard)
 - [x] AddMedScreen (AddMedViewModel, AddMedScreen - form đầy đủ)
 - [x] Reminder System (AlarmScheduler, NotificationHelper, ReminderWorker với HiltWork)
+- [x] StatisticsScreen (StatisticsViewModel, StatisticsScreen với Charts và List tabs, StatPieChart)
 - [x] Constants.kt và PreferencesManager.kt
 - [x] Permissions handling (POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM)
 
@@ -215,29 +216,35 @@
   - OneTimeWorkRequest với input data
 
 ### 9. Màn hình Progress/Statistics
-**Người nhận:** 🚧 Đang phát triển  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟡 Trung bình  
 **Thời gian ước tính:** 4-5 giờ
 
-- [ ] **StatisticsViewModel.kt** - ⚠️ Chưa implement (chỉ có TODO)
+- [x] **StatisticsViewModel.kt** ✅
   - State: statistics data, chart data, history list
   - Functions: loadStatistics(), loadHistory(), filterByDate()
   - Tính toán tỷ lệ taken/missed cho mỗi loại thuốc
   - Sử dụng Repository để lấy data
   - Expose StateFlow cho UI
-- [ ] **StatisticsScreen.kt** - ⚠️ Chưa implement (chỉ có TODO)
+  - ChartItem và HistoryItem data classes
+  - TimeFilter enum (WEEK, MONTH, YEAR, ALL)
+  - Color scheme cho chart segments
+- [x] **StatisticsScreen.kt** ✅
   - Tab "Charts":
-    - Title "Progress Charts" và "List" tab
+    - Title "Progress" với tabs "Charts" và "List"
     - Donut chart với các segment màu (teal, yellow, orange, pink, purple, blue)
     - Total value ở giữa chart
-    - Data list với columns: Label, Value, %
+    - Data table với columns: Label, Value, %
     - Color-coded dots cho mỗi medicine
+    - Empty state với message hướng dẫn
   - Tab "List":
-    - Title "Progress" và "Charts" tab, "List" tab active
-  - LazyColumn với history items
-    - Mỗi item: Date (DD.MM.YYYY), pill icon + count, meal icon, time (HH:MM AM/PM)
+    - Title "Progress" với tabs "Charts" và "List"
+    - LazyColumn với history items
+    - Mỗi item: Date (DD.MM.YYYY), Medicine Name, Dosage (icon + quantity), Time (HH:MM AM/PM)
     - Horizontal divider giữa các items
+    - Empty state
   - Bottom navigation bar (Home, Progress active, Setting)
+  - Tab selector với underline cho tab active
 
 ---
 
@@ -254,10 +261,12 @@
   - Checkbox/checkmark với interaction
   - Arrow icon để navigate
   - Material 3 components
-- [ ] **StatPieChart.kt** - Biểu đồ thống kê ⚠️ File trống, chưa implement
-  - Sử dụng thư viện chart (nếu cần)
-  - Hiển thị tỷ lệ taken/missed
-  - Donut chart với segments màu
+- [x] **StatPieChart.kt** - Biểu đồ thống kê ✅
+  - Donut chart component với Canvas
+  - Hiển thị segments với màu sắc
+  - Total value ở giữa chart
+  - ChartSegment data class
+  - Responsive sizing
 - [ ] **WeeklyTracker.kt** - Theo dõi tuần ⚠️ File trống, chưa implement
   - Calendar view
   - Mark days với taken/missed status
@@ -351,14 +360,13 @@
 5. ✅ **HomeScreen** - Đã hoàn thành
 6. ✅ **AddMedScreen** - Đã hoàn thành
 7. ✅ **Reminder System** - Đã hoàn thành
+8. ✅ **StatisticsScreen** - Đã hoàn thành
 
 ### Công việc còn lại cần ưu tiên:
-1. 🚧 **StatisticsScreen** - Cần implement UI và ViewModel (ưu tiên cao)
-2. 🚧 **StatPieChart** - Component biểu đồ cho Statistics
-3. 🚧 **SettingScreen** - Màn hình cài đặt
-4. 🚧 **WeeklyTracker** - Component theo dõi tuần (optional)
-5. 🧪 **Testing** - Unit tests và instrumented tests
-6. 🧹 **Polish** - Bug fixes, performance optimization, code cleanup
+1. 🚧 **SettingScreen** - Màn hình cài đặt (ưu tiên cao)
+2. 🚧 **WeeklyTracker** - Component theo dõi tuần (optional)
+3. 🧪 **Testing** - Unit tests và instrumented tests
+4. 🧹 **Polish** - Bug fixes, performance optimization, code cleanup
 
 ### Tips:
 - Làm theo thứ tự ưu tiên để tránh block nhau
@@ -372,20 +380,20 @@
 
 ## 📊 Tổng kết tiến độ
 
-### ✅ Đã hoàn thành (80%):
+### ✅ Đã hoàn thành (90%):
 - ✅ Architecture: MVVM, Hilt DI, Room Database
 - ✅ Navigation: Navigation Compose với type-safe routes
 - ✅ Onboarding: 6 màn hình onboarding hoàn chỉnh
 - ✅ Home Screen: Hiển thị overdue, today's schedule, completed
 - ✅ Add/Edit Medicine: Form đầy đủ với validation
 - ✅ Reminder System: WorkManager + HiltWork integration
+- ✅ Statistics Screen: ViewModel, UI với Charts và List tabs, StatPieChart
 - ✅ Permissions: POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM
 - ✅ Utilities: Constants, PreferencesManager
 
-### 🚧 Đang phát triển (15%):
-- 🚧 Statistics Screen: Cần implement ViewModel và UI
-- 🚧 Chart Components: StatPieChart, WeeklyTracker
+### 🚧 Đang phát triển (5%):
 - 🚧 Settings Screen: Cần implement UI
+- 🚧 WeeklyTracker: Component theo dõi tuần (optional)
 
 ### 📝 Cần làm (5%):
 - 📝 Testing: Unit tests, instrumented tests
@@ -395,3 +403,7 @@
 
 **Cập nhật lần cuối:** Tháng 12, 2024
 
+### 📈 Tiến độ mới nhất:
+- ✅ **StatisticsScreen hoàn thành** - Đã implement đầy đủ ViewModel, UI với Charts và List tabs, StatPieChart component
+- ✅ **StatPieChart component hoàn thành** - Donut chart với Canvas, responsive sizing
+- 🎯 **Tiến độ tổng thể: 90%** - Chỉ còn Settings Screen và WeeklyTracker (optional)
