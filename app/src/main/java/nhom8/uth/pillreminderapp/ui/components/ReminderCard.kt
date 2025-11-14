@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -34,10 +34,11 @@ fun ReminderCard(
     status: ReminderStatus,
     intakeAdvice: String = "None",
     onCardClick: () -> Unit = {},
-    onCheckboxClick: () -> Unit = {}
+    onCheckboxClick: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(
                 color = Color(0xFFF5F5F5), // Light gray background
@@ -132,7 +133,7 @@ fun ReminderCard(
         
         // Arrow icon
         Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "Navigate",
             modifier = Modifier.size(20.dp),
             tint = Color.Gray

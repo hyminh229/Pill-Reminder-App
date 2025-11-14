@@ -51,6 +51,10 @@ class HomeViewModel @Inject constructor(
     private val _todaySchedule = MutableStateFlow<List<MedicineReminder>>(emptyList())
     val todaySchedule: StateFlow<List<MedicineReminder>> = _todaySchedule.asStateFlow()
     
+    // StateFlow cho completed medicines
+    private val _completedMedicines = MutableStateFlow<List<MedicineReminder>>(emptyList())
+    val completedMedicines: StateFlow<List<MedicineReminder>> = _completedMedicines.asStateFlow()
+    
     // StateFlow cho loading state
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -90,7 +94,7 @@ class HomeViewModel @Inject constructor(
                     "${it.medicineId}_${it.takenTime}" 
                 }
                 
-                // Lấy overdue medicines
+                // Lấy overdue medicines (chỉ MISSED, không bao gồm COMPLETED)
                 val overdue = repository.getOverdueMedicines(currentDate)
                 val overdueReminders = overdue.flatMap { medicine ->
                     medicine.reminderTimes.map { time ->
@@ -113,11 +117,11 @@ class HomeViewModel @Inject constructor(
                             historyId = history?.id
                         )
                     }
-                }.filter { it.status == ReminderStatus.MISSED || it.status == ReminderStatus.COMPLETED }
+                }.filter { it.status == ReminderStatus.MISSED }
                 
                 // Lấy today's schedule (medicines có reminder times hôm nay)
                 val todayMedicines = repository.getMedicinesByDate(currentDate)
-                val todayReminders = todayMedicines.flatMap { medicine ->
+                val allTodayReminders = todayMedicines.flatMap { medicine ->
                     medicine.reminderTimes.map { time ->
                         val historyKey = "${medicine.id}_$time"
                         val history = historyMap[historyKey]
@@ -138,8 +142,17 @@ class HomeViewModel @Inject constructor(
                             historyId = history?.id
                         )
                     }
-                }.filter { 
-                    // Loại bỏ những reminder đã có trong overdue
+                }
+                
+                // Tách completed reminders
+                val completedReminders = (overdueReminders + allTodayReminders)
+                    .filter { it.status == ReminderStatus.COMPLETED }
+                    .distinctBy { "${it.medicine.id}_${it.reminderTime}" }
+                    .sortedBy { it.reminderTime }
+                
+                // Today's schedule: loại bỏ completed và overdue
+                val todayReminders = allTodayReminders.filter { 
+                    it.status != ReminderStatus.COMPLETED &&
                     !overdueReminders.any { overdue -> 
                         overdue.medicine.id == it.medicine.id && 
                         overdue.reminderTime == it.reminderTime 
@@ -148,6 +161,7 @@ class HomeViewModel @Inject constructor(
                 
                 _overdueMedicines.value = overdueReminders
                 _todaySchedule.value = todayReminders
+                _completedMedicines.value = completedReminders
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

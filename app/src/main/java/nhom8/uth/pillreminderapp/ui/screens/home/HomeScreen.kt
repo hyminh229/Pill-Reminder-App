@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +41,7 @@ fun HomeScreen(
 ) {
     val overdueMedicines by viewModel.overdueMedicines.collectAsState()
     val todaySchedule by viewModel.todaySchedule.collectAsState()
+    val completedMedicines by viewModel.completedMedicines.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     
     Scaffold(
@@ -104,7 +106,7 @@ fun HomeScreen(
                 NavigationBarItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Default.List,
+                            imageVector = Icons.AutoMirrored.Filled.List,
                             contentDescription = "Progress"
                         )
                     },
@@ -196,7 +198,7 @@ fun HomeScreen(
                     )
                 }
                 
-                if (todaySchedule.isEmpty() && overdueMedicines.isEmpty()) {
+                if (todaySchedule.isEmpty() && overdueMedicines.isEmpty() && completedMedicines.isEmpty()) {
                     // Empty state
                     item {
                         Box(
@@ -253,6 +255,38 @@ fun HomeScreen(
                                     }
                                 }
                             }
+                        )
+                    }
+                }
+                
+                // Completed Section
+                if (completedMedicines.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Completed",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(
+                                top = if (todaySchedule.isNotEmpty() || overdueMedicines.isNotEmpty()) 8.dp else 0.dp,
+                                bottom = 8.dp
+                            )
+                        )
+                    }
+                    
+                    items(completedMedicines) { reminder ->
+                        ReminderCard(
+                            medicineName = reminder.medicine.name,
+                            reminderTime = reminder.reminderTime,
+                            status = reminder.status,
+                            intakeAdvice = reminder.medicine.intakeAdvice,
+                            onCardClick = {
+                                onMedClick(reminder.medicine.id)
+                            },
+                            onCheckboxClick = {
+                                // Completed items are read-only, do nothing
+                            },
+                            modifier = Modifier.alpha(0.5f) // Make completed items faded
                         )
                     }
                 }
