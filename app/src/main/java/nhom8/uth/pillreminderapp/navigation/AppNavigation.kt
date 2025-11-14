@@ -174,14 +174,15 @@ fun AppNavigation(
             )
         ) { backStackEntry ->
             val medicineId = backStackEntry.arguments?.getLong("medicineId") ?: -1L
-            // TODO: Create EditMedScreen
-            // EditMedScreen(
-            //     medicineId = medicineId,
-            //     onSave = { navController.popBackStack() },
-            //     onCancel = { navController.popBackStack() }
-            // )
-            // Temporary: navigate back
-            navController.popBackStack()
+            AddMedScreen(
+                medicineId = medicineId,
+                onSave = {
+                    navController.popBackStack()
+                },
+                onCancel = {
+                    navController.popBackStack()
+                }
+            )
         }
         
         composable(Screen.Statistics.route) {

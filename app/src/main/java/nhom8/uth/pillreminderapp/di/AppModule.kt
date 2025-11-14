@@ -13,6 +13,7 @@ import nhom8.uth.pillreminderapp.data.database.dao.HistoryDao
 import nhom8.uth.pillreminderapp.data.database.dao.MedicineDao
 import nhom8.uth.pillreminderapp.data.repository.MedicineRepository
 import nhom8.uth.pillreminderapp.data.repository.MedicineRepositoryImpl
+import nhom8.uth.pillreminderapp.util.NotificationHelper
 import nhom8.uth.pillreminderapp.util.PreferencesManager
 import javax.inject.Singleton
 
@@ -76,5 +77,17 @@ abstract class AppModule {
         fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {
             return PreferencesManager(context)
         }
+        
+        /**
+         * Provides NotificationHelper
+         */
+        @Provides
+        @Singleton
+        fun provideNotificationHelper(@ApplicationContext context: Context): NotificationHelper {
+            return NotificationHelper(context)
+        }
+        
+        // Note: AlarmScheduler has @Inject constructor with @ApplicationContext,
+        // so Hilt will automatically provide it. No need for explicit @Provides.
     }
 }

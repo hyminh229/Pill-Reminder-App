@@ -78,6 +78,10 @@ dependencies {
     // Hilt Navigation Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     
+    // Hilt Work
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
+    
     // Accompanist Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
