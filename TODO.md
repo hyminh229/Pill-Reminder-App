@@ -3,6 +3,16 @@
 ## ✅ Đã hoàn thành
 - [x] Thiết kế Figma (Hy, Thịnh)
 - [x] Setup project và thêm Dependencies (Hy)
+- [x] Database Layer (Entities, DAOs, AppDatabase)
+- [x] Repository Layer (MedicineRepository, MedicineRepositoryImpl)
+- [x] Dependency Injection với Hilt (AppModule, @HiltAndroidApp, @AndroidEntryPoint)
+- [x] Navigation Setup (Screen.kt, AppNavigation.kt)
+- [x] Onboarding Flow (6 màn hình + OnboardingViewModel)
+- [x] HomeScreen (HomeViewModel, HomeScreen, ReminderCard)
+- [x] AddMedScreen (AddMedViewModel, AddMedScreen - form đầy đủ)
+- [x] Reminder System (AlarmScheduler, NotificationHelper, ReminderWorker với HiltWork)
+- [x] Constants.kt và PreferencesManager.kt
+- [x] Permissions handling (POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM)
 
 ---
 
@@ -151,17 +161,18 @@
   - Arrow icon để navigate
 
 ### 7. Màn hình thêm/sửa thuốc (AddMedScreen)
-**Người nhận:** ___  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟡 Trung bình  
 **Thời gian ước tính:** 5-6 giờ
 
-- [ ] **AddMedViewModel.kt**
+- [x] **AddMedViewModel.kt**
   - State: form fields (name, dosage, quantity, unit, intakeAdvice, startDate, dueDate, reminderTimes, repeat)
   - Validation logic
   - Functions: saveMedicine(), updateMedicine(), deleteMedicine()
   - Handle intake advice (None, Before meal, With meal, After meal)
   - Handle unit selection (pills, ampoule, application, drop, gram, injection, miligram, teaspoon)
-- [ ] **AddMedScreen.kt** - UI
+  - Load medicine cho edit mode
+- [x] **AddMedScreen.kt** - UI
   - Back button và title "Medication details"
   - Pills name field với icon và edit button
   - Intake advice section:
@@ -174,41 +185,47 @@
   - Notification section:
     - Reminder time list với bell icon (10:00 AM)
     - Delete button cho mỗi reminder time
-    - "Add reminder time" button
+    - "Add reminder time" button với TimePicker
     - Repeat button với cycle icon
   - Done button
   - Error handling và validation messages
+  - Material 3 DatePicker và TimePicker
 
 ### 8. Utility Classes - Nhắc nhở
-**Người nhận:** ___  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟡 Trung bình  
 **Thời gian ước tính:** 3-4 giờ
 
-- [ ] **AlarmScheduler.kt**
+- [x] **AlarmScheduler.kt**
   - Function scheduleReminder(medicine, times)
   - Function cancelReminder(medicineId)
   - Function updateReminder(medicine)
   - Sử dụng WorkManager để schedule
-- [ ] **NotificationHelper.kt**
+  - Parse time string và tính toán delay
+  - @Singleton với @Inject constructor
+- [x] **NotificationHelper.kt**
   - Function createNotificationChannel()
   - Function showNotification(title, message, medicineId)
-  - Custom notification layout nếu cần
-- [ ] **ReminderWorker.kt**
-  - Extend CoroutineWorker
+  - Custom notification layout
+  - @Singleton với @Inject constructor
+- [x] **ReminderWorker.kt**
+  - Extend CoroutineWorker với @HiltWorker
   - Logic hiển thị notification khi đến giờ
-  - Mark missed nếu quá giờ
-  - OneTimeWorkRequest hoặc PeriodicWorkRequest
+  - Sử dụng AssistedInject cho HiltWork
+  - OneTimeWorkRequest với input data
 
 ### 9. Màn hình Progress/Statistics
-**Người nhận:** ___  
+**Người nhận:** 🚧 Đang phát triển  
 **Ưu tiên:** 🟡 Trung bình  
 **Thời gian ước tính:** 4-5 giờ
 
-- [ ] **StatisticsViewModel.kt**
+- [ ] **StatisticsViewModel.kt** - ⚠️ Chưa implement (chỉ có TODO)
   - State: statistics data, chart data, history list
   - Functions: loadStatistics(), loadHistory(), filterByDate()
   - Tính toán tỷ lệ taken/missed cho mỗi loại thuốc
-- [ ] **StatisticsScreen.kt** - UI với 2 tabs
+  - Sử dụng Repository để lấy data
+  - Expose StateFlow cho UI
+- [ ] **StatisticsScreen.kt** - ⚠️ Chưa implement (chỉ có TODO)
   - Tab "Charts":
     - Title "Progress Charts" và "List" tab
     - Donut chart với các segment màu (teal, yellow, orange, pink, purple, blue)
@@ -227,28 +244,30 @@
 ## 🟢 Ưu tiên thấp - Enhancements
 
 ### 10. UI Components
-**Người nhận:** ___  
+**Người nhận:** 🚧 Một phần hoàn thành  
 **Ưu tiên:** 🟢 Thấp  
 **Thời gian ước tính:** 3-4 giờ
 
-- [ ] **ReminderCard.kt** - Component hiển thị thông tin thuốc
-  - Medicine name, dosage
-  - Next reminder time
-  - Status badge
-  - Action buttons (taken, skip, edit, delete)
-- [ ] **StatPieChart.kt** - Biểu đồ thống kê
+- [x] **ReminderCard.kt** - Component hiển thị thông tin thuốc ✅
+  - Medicine name, reminder time
+  - Status badge (Completed, Before Eating, Skipped, Missed, Pending)
+  - Checkbox/checkmark với interaction
+  - Arrow icon để navigate
+  - Material 3 components
+- [ ] **StatPieChart.kt** - Biểu đồ thống kê ⚠️ File trống, chưa implement
   - Sử dụng thư viện chart (nếu cần)
   - Hiển thị tỷ lệ taken/missed
-- [ ] **WeeklyTracker.kt** - Theo dõi tuần
+  - Donut chart với segments màu
+- [ ] **WeeklyTracker.kt** - Theo dõi tuần ⚠️ File trống, chưa implement
   - Calendar view
   - Mark days với taken/missed status
 
 ### 11. Màn hình Settings
-**Người nhận:** ___  
+**Người nhận:** 🚧 Chưa implement  
 **Ưu tiên:** 🟢 Thấp  
 **Thời gian ước tính:** 2-3 giờ
 
-- [ ] **SettingsScreen.kt**
+- [ ] **SettingScreen.kt** - ⚠️ Chưa implement (chỉ có TODO)
   - Header với tabs: "History" (inactive), "Setting" (active với gear icon)
   - Section "Reminder Settings":
     - "Reminder Sound" option (navigate to sound picker)
@@ -257,27 +276,43 @@
     - "Remove ADS" option
     - "Light or Dark Theme" với value "Light"
   - Bottom navigation bar (Home, Stats, Setting active)
+  - Sử dụng PreferencesManager để lưu settings
 
 ### 12. Permissions Handling
-**Người nhận:** ___  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟢 Thấp  
 **Thời gian ước tính:** 1-2 giờ
 
-- [ ] Request POST_NOTIFICATIONS permission (Android 13+)
-- [ ] Request SCHEDULE_EXACT_ALARM permission (Android 12+)
-- [ ] Permission handling UI
-- [ ] Graceful degradation khi không có quyền
+- [x] Request POST_NOTIFICATIONS permission (Android 13+)
+  - Đã implement trong NotificationPermissionScreen
+  - Sử dụng Accompanist Permissions
+- [x] Request SCHEDULE_EXACT_ALARM permission (Android 12+)
+  - Đã khai báo trong AndroidManifest.xml
+- [x] Permission handling UI
+  - NotificationPermissionScreen với UI đẹp
+  - Permission request trong AppNavigation
+- [x] Graceful degradation khi không có quyền
+  - Có option "No thanks!" để skip
 
 ### 13. Constants và Utils
-**Người nhận:** ___  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟢 Thấp  
 **Thời gian ước tính:** 1 giờ
 
-- [ ] **Constants.kt**
-  - Notification channel ID
-  - WorkManager tag names
+- [x] **Constants.kt** ✅
+  - Notification channel ID, name, description
+  - WorkManager tag names và prefix
   - Database table names
   - Shared preferences keys
+  - Medicine units list
+  - Intake advice options
+  - Repeat options
+- [x] **PreferencesManager.kt** ✅
+  - Quản lý SharedPreferences
+  - First launch flag
+  - User nickname
+  - Reminder tone preference
+  - Theme preference
 
 ---
 
@@ -309,13 +344,21 @@
 ## 📝 Notes
 
 ### Công việc quan trọng cần hoàn thành trước:
-1. **Database Layer** - Cần làm đầu tiên, là nền tảng cho tất cả features
-2. **Repository & DI** - Cần làm ngay sau database
-3. **Navigation** - Cần để có thể điều hướng giữa các màn hình
-4. **Onboarding Flow** - Cần để hướng dẫn người dùng lần đầu sử dụng
-5. **HomeScreen** - Màn hình chính, cần hoàn thiện sớm
-6. **AddMedScreen** - Tính năng core, cần để thêm thuốc
-7. **Reminder System** - Core feature, cần để app hoạt động đúng mục đích
+1. ✅ **Database Layer** - Đã hoàn thành
+2. ✅ **Repository & DI** - Đã hoàn thành
+3. ✅ **Navigation** - Đã hoàn thành
+4. ✅ **Onboarding Flow** - Đã hoàn thành
+5. ✅ **HomeScreen** - Đã hoàn thành
+6. ✅ **AddMedScreen** - Đã hoàn thành
+7. ✅ **Reminder System** - Đã hoàn thành
+
+### Công việc còn lại cần ưu tiên:
+1. 🚧 **StatisticsScreen** - Cần implement UI và ViewModel (ưu tiên cao)
+2. 🚧 **StatPieChart** - Component biểu đồ cho Statistics
+3. 🚧 **SettingScreen** - Màn hình cài đặt
+4. 🚧 **WeeklyTracker** - Component theo dõi tuần (optional)
+5. 🧪 **Testing** - Unit tests và instrumented tests
+6. 🧹 **Polish** - Bug fixes, performance optimization, code cleanup
 
 ### Tips:
 - Làm theo thứ tự ưu tiên để tránh block nhau
@@ -325,5 +368,30 @@
 
 ---
 
-**Cập nhật lần cuối:** 2024
+---
+
+## 📊 Tổng kết tiến độ
+
+### ✅ Đã hoàn thành (80%):
+- ✅ Architecture: MVVM, Hilt DI, Room Database
+- ✅ Navigation: Navigation Compose với type-safe routes
+- ✅ Onboarding: 6 màn hình onboarding hoàn chỉnh
+- ✅ Home Screen: Hiển thị overdue, today's schedule, completed
+- ✅ Add/Edit Medicine: Form đầy đủ với validation
+- ✅ Reminder System: WorkManager + HiltWork integration
+- ✅ Permissions: POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM
+- ✅ Utilities: Constants, PreferencesManager
+
+### 🚧 Đang phát triển (15%):
+- 🚧 Statistics Screen: Cần implement ViewModel và UI
+- 🚧 Chart Components: StatPieChart, WeeklyTracker
+- 🚧 Settings Screen: Cần implement UI
+
+### 📝 Cần làm (5%):
+- 📝 Testing: Unit tests, instrumented tests
+- 📝 Polish: Bug fixes, performance, documentation
+
+---
+
+**Cập nhật lần cuối:** Tháng 12, 2024
 
