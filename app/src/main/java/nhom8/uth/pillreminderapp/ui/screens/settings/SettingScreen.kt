@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,8 +46,14 @@ fun SettingScreen(
     val availableSounds by viewModel.availableSounds.collectAsState()
     
     var showSoundPicker by remember { mutableStateOf(false) }
+    var showInDevelopmentMessage by remember { mutableStateOf(false) }
+    
+    val snackbarHostState = remember { SnackbarHostState() }
     
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         bottomBar = {
             NavigationBar(
                 containerColor = Color.White
@@ -169,7 +176,8 @@ fun SettingScreen(
                 title = "Reminder Mode",
                 value = reminderMode,
                 onClick = {
-                    // TODO: Show reminder mode options
+                    // Hiển thị thông báo đang phát triển
+                    showInDevelopmentMessage = true
                 }
             )
             
@@ -189,7 +197,8 @@ fun SettingScreen(
                 title = "Remove ADS",
                 value = null,
                 onClick = {
-                    // TODO: Handle remove ads
+                    // Hiển thị thông báo đang phát triển
+                    showInDevelopmentMessage = true
                 }
             )
             
@@ -200,11 +209,21 @@ fun SettingScreen(
                 title = "Light or Dark Theme",
                 value = theme,
                 onClick = {
-                    // Toggle theme
-                    val newTheme = if (theme == "Light") "Dark" else "Light"
-                    viewModel.updateTheme(newTheme)
+                    // Hiển thị thông báo đang phát triển
+                    showInDevelopmentMessage = true
                 }
             )
+        }
+    }
+    
+    // Hiển thị Snackbar khi có thông báo đang phát triển
+    LaunchedEffect(showInDevelopmentMessage) {
+        if (showInDevelopmentMessage) {
+            snackbarHostState.showSnackbar(
+                message = "Tính năng này đang được phát triển",
+                duration = SnackbarDuration.Short
+            )
+            showInDevelopmentMessage = false
         }
     }
 }
@@ -357,3 +376,4 @@ private fun SoundItemRow(
         )
     }
 }
+
