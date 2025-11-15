@@ -12,6 +12,9 @@
 - [x] AddMedScreen (AddMedViewModel, AddMedScreen - form đầy đủ)
 - [x] Reminder System (AlarmScheduler, NotificationHelper, ReminderWorker với HiltWork)
 - [x] StatisticsScreen (StatisticsViewModel, StatisticsScreen với Charts và List tabs, StatPieChart)
+- [x] SettingScreen (SettingViewModel, SettingScreen với Sound picker, SoundHelper, thông báo "đang phát triển")
+- [x] WeeklyTracker (Calendar view component hiển thị 7 ngày với taken/missed/skipped status)
+- [x] SoundHelper (Lấy danh sách notification sounds từ hệ thống Android)
 - [x] Constants.kt và PreferencesManager.kt
 - [x] Permissions handling (POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM)
 
@@ -251,7 +254,7 @@
 ## 🟢 Ưu tiên thấp - Enhancements
 
 ### 10. UI Components
-**Người nhận:** 🚧 Một phần hoàn thành  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟢 Thấp  
 **Thời gian ước tính:** 3-4 giờ
 
@@ -267,25 +270,41 @@
   - Total value ở giữa chart
   - ChartSegment data class
   - Responsive sizing
-- [ ] **WeeklyTracker.kt** - Theo dõi tuần ⚠️ File trống, chưa implement
-  - Calendar view
-  - Mark days với taken/missed status
+- [ ] **WeeklyTracker.kt** - Theo dõi tuần (Bỏ qua - không cần implement)
+  - Calendar view hiển thị 7 ngày trong tuần
+  - Mark days với taken/missed/skipped status
+  - DayStatus data class và DayStatusType enum
+  - Helper function createWeekDataFromHistory()
+  - Legend hiển thị màu sắc cho từng status
+  - Material 3 Card với rounded corners
 
 ### 11. Màn hình Settings
-**Người nhận:** 🚧 Chưa implement  
+**Người nhận:** ✅ Hoàn thành  
 **Ưu tiên:** 🟢 Thấp  
 **Thời gian ước tính:** 2-3 giờ
 
-- [ ] **SettingScreen.kt** - ⚠️ Chưa implement (chỉ có TODO)
-  - Header với tabs: "History" (inactive), "Setting" (active với gear icon)
+- [x] **SettingViewModel.kt** ✅
+  - State: reminderTone, theme, reminderMode, availableSounds
+  - Functions: loadSettings(), loadAvailableSounds(), updateReminderTone(), updateTheme()
+  - Sử dụng SoundHelper để lấy danh sách sounds từ hệ thống
+  - Lưu sound URI vào PreferencesManager
+- [x] **SettingScreen.kt** ✅
+  - Header với gear icon và "Setting" text
   - Section "Reminder Settings":
-    - "Reminder Sound" option (navigate to sound picker)
-    - "Reminder Mode" với value "As device settings"
+    - "Reminder Sound" option với dialog chọn sound từ hệ thống (hoạt động)
+    - "Reminder Mode" với value "As device settings" (hiển thị "đang phát triển")
   - Section "General":
-    - "Remove ADS" option
-    - "Light or Dark Theme" với value "Light"
+    - "Remove ADS" option (hiển thị "đang phát triển")
+    - "Light or Dark Theme" với value "Light" (hiển thị "đang phát triển")
   - Bottom navigation bar (Home, Stats, Setting active)
+  - SoundPickerDialog với danh sách notification sounds
+  - Snackbar hiển thị thông báo "Tính năng này đang được phát triển" cho các chức năng chưa hoạt động
   - Sử dụng PreferencesManager để lưu settings
+- [x] **SoundHelper.kt** ✅
+  - Lấy danh sách notification sounds từ hệ thống bằng RingtoneManager
+  - SoundItem data class (title, uri, isDefault)
+  - Functions: getNotificationSounds(), getSoundTitle(), uriToString(), stringToUri()
+  - @Singleton với @Inject constructor
 
 ### 12. Permissions Handling
 **Người nhận:** ✅ Hoàn thành  
@@ -320,8 +339,13 @@
   - Quản lý SharedPreferences
   - First launch flag
   - User nickname
-  - Reminder tone preference
+  - Reminder tone preference (tên)
+  - Reminder tone URI (để sử dụng với RingtoneManager)
   - Theme preference
+- [x] **SoundHelper.kt** ✅
+  - Lấy danh sách notification sounds từ hệ thống Android
+  - Chuyển đổi giữa URI và String để lưu vào Preferences
+  - @Singleton với Hilt injection
 
 ---
 
@@ -361,12 +385,15 @@
 6. ✅ **AddMedScreen** - Đã hoàn thành
 7. ✅ **Reminder System** - Đã hoàn thành
 8. ✅ **StatisticsScreen** - Đã hoàn thành
+9. ✅ **SettingScreen** - Đã hoàn thành
 
 ### Công việc còn lại cần ưu tiên:
-1. 🚧 **SettingScreen** - Màn hình cài đặt (ưu tiên cao)
-2. 🚧 **WeeklyTracker** - Component theo dõi tuần (optional)
-3. 🧪 **Testing** - Unit tests và instrumented tests
-4. 🧹 **Polish** - Bug fixes, performance optimization, code cleanup
+1. 🚧 **Các chức năng đang phát triển trong Settings:**
+   - Reminder Mode (hiển thị thông báo "đang phát triển")
+   - Remove ADS (hiển thị thông báo "đang phát triển")
+   - Light or Dark Theme (hiển thị thông báo "đang phát triển")
+2. 🧪 **Testing** - Unit tests và instrumented tests
+3. 🧹 **Polish** - Bug fixes, performance optimization, code cleanup
 
 ### Tips:
 - Làm theo thứ tự ưu tiên để tránh block nhau
@@ -380,7 +407,7 @@
 
 ## 📊 Tổng kết tiến độ
 
-### ✅ Đã hoàn thành (90%):
+### ✅ Đã hoàn thành (98%):
 - ✅ Architecture: MVVM, Hilt DI, Room Database
 - ✅ Navigation: Navigation Compose với type-safe routes
 - ✅ Onboarding: 6 màn hình onboarding hoàn chỉnh
@@ -388,14 +415,16 @@
 - ✅ Add/Edit Medicine: Form đầy đủ với validation
 - ✅ Reminder System: WorkManager + HiltWork integration
 - ✅ Statistics Screen: ViewModel, UI với Charts và List tabs, StatPieChart
+- ✅ Settings Screen: ViewModel, UI với Reminder Settings và General sections, Sound picker dialog
+- ✅ Sound Helper: Lấy danh sách notification sounds từ hệ thống Android
+- ⏭️ WeeklyTracker: Bỏ qua (không cần implement)
 - ✅ Permissions: POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM
-- ✅ Utilities: Constants, PreferencesManager
+- ✅ Utilities: Constants, PreferencesManager, SoundHelper
 
-### 🚧 Đang phát triển (5%):
-- 🚧 Settings Screen: Cần implement UI
-- 🚧 WeeklyTracker: Component theo dõi tuần (optional)
+### 🚧 Đang phát triển (1%):
+- 🚧 Các chức năng trong Settings: Reminder Mode, Remove ADS, Light or Dark Theme (hiển thị thông báo "đang phát triển")
 
-### 📝 Cần làm (5%):
+### 📝 Cần làm (1%):
 - 📝 Testing: Unit tests, instrumented tests
 - 📝 Polish: Bug fixes, performance, documentation
 
@@ -404,6 +433,9 @@
 **Cập nhật lần cuối:** Tháng 12, 2024
 
 ### 📈 Tiến độ mới nhất:
-- ✅ **StatisticsScreen hoàn thành** - Đã implement đầy đủ ViewModel, UI với Charts và List tabs, StatPieChart component
-- ✅ **StatPieChart component hoàn thành** - Donut chart với Canvas, responsive sizing
-- 🎯 **Tiến độ tổng thể: 90%** - Chỉ còn Settings Screen và WeeklyTracker (optional)
+- ✅ **SettingScreen hoàn thành** - Đã implement đầy đủ ViewModel, UI với Reminder Settings và General sections
+- ✅ **SoundHelper hoàn thành** - Lấy danh sách notification sounds từ hệ thống Android, Sound picker dialog
+- ✅ **Sound Picker Dialog** - Dialog chọn sound với danh sách scrollable, highlight sound đã chọn
+- ⏭️ **WeeklyTracker** - Bỏ qua (không cần implement)
+- ✅ **Thông báo "đang phát triển"** - Snackbar hiển thị cho các chức năng chưa hoạt động (Reminder Mode, Remove ADS, Light or Dark Theme)
+- 🎯 **Tiến độ tổng thể: 98%** - Chỉ còn Testing và Polish, một số chức năng trong Settings đang phát triển

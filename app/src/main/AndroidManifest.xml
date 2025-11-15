@@ -19,6 +19,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PillReminderApp">
+        
+        <!-- Disable default WorkManagerInitializer để sử dụng custom Configuration -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,6 +42,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- BroadcastReceiver để xử lý notification actions -->
+        <receiver
+            android:name=".receivers.ReminderActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="nhom8.uth.pillreminderapp.ACTION_CONFIRM" />
+                <action android:name="nhom8.uth.pillreminderapp.ACTION_SKIP" />
+                <action android:name="nhom8.uth.pillreminderapp.ACTION_REMIND_LATER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -258,12 +258,15 @@ class AddMedViewModel @Inject constructor(
                     medicine.id
                 } else {
                     // Insert new medicine and get the generated ID
-                    repository.insertMedicine(medicine)
+                    val newId = repository.insertMedicine(medicine)
+                    newId
                 }
                 
                 // Schedule reminders for the saved medicine with the correct ID
                 val savedMedicine = medicine.copy(id = savedMedicineId)
                 alarmScheduler.scheduleReminder(savedMedicine)
+                
+                android.util.Log.d("AddMedViewModel", "Saved medicine: ${savedMedicine.name}, ID: $savedMedicineId, Scheduled reminders")
                 
                 _saveSuccess.value = true
                 onSuccess()

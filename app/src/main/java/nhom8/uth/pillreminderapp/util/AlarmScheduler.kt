@@ -1,9 +1,14 @@
 package nhom8.uth.pillreminderapp.util
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import dagger.hilt.android.qualifiers.ApplicationContext
 import nhom8.uth.pillreminderapp.data.database.entity.MedicineEntity
+import nhom8.uth.pillreminderapp.util.Constants
 import nhom8.uth.pillreminderapp.workers.ReminderWorker
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -23,6 +28,8 @@ class AlarmScheduler @Inject constructor(
      * Lên lịch nhắc nhở cho một thuốc
      */
     fun scheduleReminder(medicine: MedicineEntity) {
+        android.util.Log.d("AlarmScheduler", "scheduleReminder called for: ${medicine.name}, Times: ${medicine.reminderTimes}")
+        
         // Cancel existing reminders for this medicine
         cancelReminder(medicine.id)
         
@@ -35,11 +42,15 @@ class AlarmScheduler @Inject constructor(
             set(Calendar.MILLISECOND, 0)
         }
         
+        android.util.Log.d("AlarmScheduler", "Current date: ${currentDate.time}, Start date: ${startDate.time}")
+        
         // Only schedule if start date is today or in the future
         if (startDate.after(currentDate) || isSameDay(startDate, currentDate)) {
             medicine.reminderTimes.forEach { timeString ->
                 scheduleReminderForTime(medicine, timeString, startDate)
             }
+        } else {
+            android.util.Log.w("AlarmScheduler", "Start date is in the past, skipping schedule")
         }
     }
     
@@ -63,17 +74,29 @@ class AlarmScheduler @Inject constructor(
         
         val currentTime = Calendar.getInstance()
         
-        // If reminder time is in the past, schedule for tomorrow
-        if (reminderTime.before(currentTime) && !isSameDay(reminderTime, currentTime)) {
+        // If reminder time is in the past (even same day), schedule for tomorrow
+        if (reminderTime.before(currentTime)) {
             reminderTime.add(Calendar.DAY_OF_YEAR, 1)
         }
         
         val delay = reminderTime.timeInMillis - currentTime.timeInMillis
         
+        android.util.Log.d("AlarmScheduler", "Scheduling reminder for ${medicine.name} at $timeString")
+        android.util.Log.d("AlarmScheduler", "Current time: ${currentTime.time}, Reminder time: ${reminderTime.time}, Delay: ${delay}ms (${delay / 1000 / 60} minutes)")
+        
         // Only schedule if delay is positive
         if (delay > 0) {
+            // Constraints: Không cần network, chạy ngay cả khi battery low
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresBatteryNotLow(false)
+                .setRequiresCharging(false)
+                .setRequiresDeviceIdle(false)
+                .build()
+            
             val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setConstraints(constraints)
                 .setInputData(
                     workDataOf(
                         "medicineId" to medicine.id,
@@ -89,6 +112,9 @@ class AlarmScheduler @Inject constructor(
                 .build()
             
             workManager.enqueue(workRequest)
+            android.util.Log.d("AlarmScheduler", "WorkManager enqueued for ${medicine.name}, delay: ${delay}ms")
+        } else {
+            android.util.Log.w("AlarmScheduler", "Delay is not positive: $delay, skipping schedule")
         }
     }
     
@@ -135,6 +161,38 @@ class AlarmScheduler @Inject constructor(
     private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    }
+    
+    /**
+     * Lên lịch nhắc nhở lại sau 30 phút
+     */
+    fun scheduleReminderIn30Minutes(medicine: MedicineEntity, reminderTime: String) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+            .setRequiresBatteryNotLow(false)
+            .setRequiresCharging(false)
+            .setRequiresDeviceIdle(false)
+            .build()
+        
+        val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+            .setInitialDelay(30, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .setInputData(
+                workDataOf(
+                    "medicineId" to medicine.id,
+                    "medicineName" to medicine.name,
+                    "reminderTime" to reminderTime,
+                    "quantity" to medicine.quantity,
+                    "unit" to medicine.unit,
+                    "intakeAdvice" to medicine.intakeAdvice
+                )
+            )
+            .addTag("${Constants.REMINDER_WORK_NAME_PREFIX}${medicine.id}_30min")
+            .addTag(Constants.REMINDER_WORK_TAG)
+            .build()
+        
+        workManager.enqueue(workRequest)
+        android.util.Log.d("AlarmScheduler", "Scheduled reminder in 30 minutes for ${medicine.name}")
     }
 }
 

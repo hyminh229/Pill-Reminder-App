@@ -99,5 +99,7 @@ abstract class AppModule {
         
         // Note: AlarmScheduler has @Inject constructor with @ApplicationContext,
         // so Hilt will automatically provide it. No need for explicit @Provides.
+        // Note: HiltWorkerFactory is automatically provided by hilt-work library,
+        // no need for explicit @Provides.
     }
 }

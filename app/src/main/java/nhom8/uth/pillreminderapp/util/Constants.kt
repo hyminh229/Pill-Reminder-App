@@ -49,5 +49,10 @@ object Constants {
         "Weekly",
         "Custom"
     )
+    
+    // Notification Actions
+    const val ACTION_CONFIRM = "nhom8.uth.pillreminderapp.ACTION_CONFIRM"
+    const val ACTION_SKIP = "nhom8.uth.pillreminderapp.ACTION_SKIP"
+    const val ACTION_REMIND_LATER = "nhom8.uth.pillreminderapp.ACTION_REMIND_LATER"
 }
 
