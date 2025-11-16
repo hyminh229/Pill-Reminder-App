@@ -2,6 +2,9 @@ package nhom8.uth.pillreminderapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// Onboarding Color
+val OnboardingBlue = Color(0xFF5FB9E6)
+
 // Light Blue Theme Colors (theo thiết kế)
 val LightBlue = Color(0xFFE3F2FD) // Light blue background
 val MediumBlue = Color(0xFF90CAF9) // Medium blue

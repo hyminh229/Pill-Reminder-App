@@ -2,14 +2,23 @@ package nhom8.uth.pillreminderapp.ui.screens.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -17,21 +26,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nhom8.uth.pillreminderapp.R
-import nhom8.uth.pillreminderapp.ui.theme.DarkBlue
-import nhom8.uth.pillreminderapp.ui.theme.LightBlue
+import nhom8.uth.pillreminderapp.ui.theme.OnboardingBlue
 import nhom8.uth.pillreminderapp.ui.theme.PillReminderAppTheme
 
-/**
- * Màn hình Get Started - Giới thiệu ứng dụng
- */
 @Composable
-fun GetStartedScreen(
-    onGetStarted: () -> Unit
-) {
+fun GetStartedScreen(onNavigate: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightBlue),
+            .background(OnboardingBlue),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -39,58 +42,56 @@ fun GetStartedScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            // Icon stopwatch với pills
+            Spacer(modifier = Modifier.weight(1f))
             Image(
-                painter = painterResource(id = R.drawable.pill_reminder_logo),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Pill Reminder Logo",
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(bottom = 48.dp),
-                colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
+                modifier = Modifier.size(150.dp)
             )
-
+            Spacer(modifier = Modifier.height(48.dp))
             Text(
                 text = "Get medication reminders",
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = androidx.compose.ui.graphics.Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
+                color = Color.White,
+                textAlign = TextAlign.Center
             )
-
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "And much more...",
-                fontSize = 18.sp,
-                color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 64.dp)
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
             )
-
-            // Get Started button
+            Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = onGetStarted,
+                onClick = onNavigate,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = DarkBlue
+                    containerColor = Color(0xFF00838F) // Darker teal
                 )
             ) {
                 Text(
                     text = "Get Started",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
+            Spacer(modifier = Modifier.height(48.dp))
         }
     }
 }
-@Preview(showBackground = true, showSystemUi = true)
+
+@Preview(showBackground = true)
 @Composable
 fun GetStartedScreenPreview() {
     PillReminderAppTheme {
-        GetStartedScreen(onGetStarted = {})
+        GetStartedScreen(onNavigate = {})
     }
 }

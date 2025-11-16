@@ -3,6 +3,7 @@
     android:height="222dp"
     android:viewportWidth="196"
     android:viewportHeight="222">
-    <path
-        android:pathData="M0 0H196V222H0z"/>
+  <path
+      android:pathData="M0,0h196v222h-196z"
+
 </vector>
