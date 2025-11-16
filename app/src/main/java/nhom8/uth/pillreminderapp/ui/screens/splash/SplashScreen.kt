@@ -1,58 +1,36 @@
 package nhom8.uth.pillreminderapp.ui.screens.splash
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nhom8.uth.pillreminderapp.R
-import nhom8.uth.pillreminderapp.ui.theme.LightBlue
-import nhom8.uth.pillreminderapp.ui.theme.MediumBlue
-import kotlinx.coroutines.delay
+import nhom8.uth.pillreminderapp.ui.theme.OnboardingBlue
+import nhom8.uth.pillreminderapp.ui.theme.PillReminderAppTheme
 
-/**
- * Màn hình Splash - Hiển thị logo và loading khi khởi động app
- */
 @Composable
-fun SplashScreen(
-    onNavigateToNext: () -> Unit
-) {
-    val alpha by animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(durationMillis = 1000),
-        label = "splash_alpha"
-    )
-
-    LaunchedEffect(Unit) {
-        delay(2500) // Auto navigate sau 2.5 giây
-        onNavigateToNext()
-    }
-
+fun SplashScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MediumBlue,
-                        LightBlue
-                    )
-                )
-            ),
+            .background(OnboardingBlue),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -60,39 +38,41 @@ fun SplashScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(32.dp)
         ) {
-            // Logo với stopwatch và pills
             Image(
-                painter = painterResource(id = R.drawable.pill_reminder_logo),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Pill Reminder Logo",
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(bottom = 24.dp),
-                colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
+                modifier = Modifier.size(150.dp)
             )
-
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Pill Remider",
+                text = "Pill Reminder",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = androidx.compose.ui.graphics.Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 8.dp)
+                color = Color.White,
+                textAlign = TextAlign.Center
             )
-
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Stay healthy and track your daily medicines intake",
+                text = "Stay healthy and track your daily\nmedicine intake",
                 fontSize = 16.sp,
-                color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 48.dp)
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
             )
-
-            // Loading indicator
-            CircularProgressIndicator(
-                modifier = Modifier.size(32.dp),
-                color = androidx.compose.ui.graphics.Color.White,
-                strokeWidth = 3.dp
+            Spacer(modifier = Modifier.height(48.dp))
+            Text(
+                text = ". . .",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SplashScreenPreview() {
+    PillReminderAppTheme {
+        SplashScreen()
     }
 }

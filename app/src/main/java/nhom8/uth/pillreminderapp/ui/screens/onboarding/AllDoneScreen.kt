@@ -1,7 +1,15 @@
 package nhom8.uth.pillreminderapp.ui.screens.onboarding
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -11,22 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nhom8.uth.pillreminderapp.ui.theme.DarkBlue
-import nhom8.uth.pillreminderapp.ui.theme.LightBlue
+import nhom8.uth.pillreminderapp.ui.theme.OnboardingBlue
+import nhom8.uth.pillreminderapp.ui.theme.PillReminderAppTheme
 
-/**
- * Màn hình All Done - Hoàn thành onboarding flow
- */
 @Composable
-fun AllDoneScreen(
-    onLetsGo: () -> Unit
-) {
+fun AllDoneScreen(onLetsGo: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightBlue),
+            .background(OnboardingBlue),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -34,41 +38,49 @@ fun AllDoneScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp)
+                .padding(horizontal = 32.dp)
         ) {
+            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "All done!",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 24.dp)
+                textAlign = TextAlign.Center
             )
-
-            // Party popper emojis
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = "🎉🎉🎉",
                 fontSize = 64.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 64.dp)
+                textAlign = TextAlign.Center
             )
-
-            // Let's go button
+            Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = onLetsGo,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = DarkBlue
+                    containerColor = Color(0xFF00838F) // Darker teal
                 )
             ) {
                 Text(
                     text = "Let's go",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
+            Spacer(modifier = Modifier.height(48.dp))
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AllDoneScreenPreview() {
+    PillReminderAppTheme {
+        AllDoneScreen(onLetsGo = {})
     }
 }
