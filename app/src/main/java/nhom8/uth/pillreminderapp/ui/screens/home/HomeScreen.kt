@@ -1,15 +1,39 @@
 package nhom8.uth.pillreminderapp.ui.screens.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,8 +48,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import nhom8.uth.pillreminderapp.R
 import nhom8.uth.pillreminderapp.ui.components.ReminderCard
-import nhom8.uth.pillreminderapp.ui.theme.DarkBlue
-import nhom8.uth.pillreminderapp.ui.theme.LightBlue
 
 /**
  * Màn hình Home - Hiển thị danh sách thuốc hôm nay và quá hạn
@@ -43,26 +65,23 @@ fun HomeScreen(
     val todaySchedule by viewModel.todaySchedule.collectAsState()
     val completedMedicines by viewModel.completedMedicines.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            painter = painterResource(id = R.drawable.pill_reminder_logo),
-                            contentDescription = "Pills",
+                            painter = painterResource(id = R.drawable.logo),
+                            contentDescription = "Pills Reminder",
                             modifier = Modifier.size(32.dp),
-                            tint = LightBlue
+                            tint = Color(0xFF5FB9E6)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "Pills Reminder",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 },
@@ -74,63 +93,53 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddMedClick,
-                containerColor = DarkBlue
+                shape = CircleShape,
+                containerColor = Color.White,
+                contentColor = Color.Black,
+                elevation = FloatingActionButtonDefaults.elevation(4.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Medicine",
-                    tint = Color.White
-                )
+                Icon(Icons.Default.Add, contentDescription = "Add Medicine")
             }
         },
         bottomBar = {
-            NavigationBar(
-                containerColor = Color.White
-            ) {
+            NavigationBar(containerColor = Color.White) {
                 NavigationBarItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Home"
-                        )
-                    },
-                    label = { Text("Home") },
                     selected = true,
-                    onClick = { },
+                    onClick = { /* Current Screen */ },
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = LightBlue,
-                        selectedTextColor = LightBlue,
-                        indicatorColor = Color.Transparent
+                        indicatorColor = Color.Transparent,
+                        selectedIconColor = Color(0xFF5FB9E6),
+                        selectedTextColor = Color(0xFF5FB9E6),
+                        unselectedIconColor = Color.Gray,
+                        unselectedTextColor = Color.Gray
                     )
                 )
                 NavigationBarItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.List,
-                            contentDescription = "Progress"
-                        )
-                    },
-                    label = { Text("Progress") },
                     selected = false,
                     onClick = onNavigateToStatistics,
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Progress") },
+                    label = { Text("Progress") },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = LightBlue,
-                        selectedTextColor = LightBlue
+                        indicatorColor = Color.Transparent,
+                        selectedIconColor = Color(0xFF5FB9E6),
+                        selectedTextColor = Color(0xFF5FB9E6),
+                        unselectedIconColor = Color.Gray,
+                        unselectedTextColor = Color.Gray
                     )
                 )
                 NavigationBarItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Setting"
-                        )
-                    },
-                    label = { Text("Setting") },
                     selected = false,
                     onClick = onNavigateToSettings,
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Setting") },
+                    label = { Text("Setting") },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = LightBlue,
-                        selectedTextColor = LightBlue
+                        indicatorColor = Color.Transparent,
+                        selectedIconColor = Color(0xFF5FB9E6),
+                        selectedTextColor = Color(0xFF5FB9E6),
+                        unselectedIconColor = Color.Gray,
+                        unselectedTextColor = Color.Gray
                     )
                 )
             }
@@ -166,7 +175,7 @@ fun HomeScreen(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
-                    
+
                     items(overdueMedicines) { reminder ->
                         ReminderCard(
                             medicineName = reminder.medicine.name,
@@ -177,16 +186,14 @@ fun HomeScreen(
                                 onMedClick(reminder.medicine.id)
                             },
                             onCheckboxClick = {
-                                if (reminder.status == ReminderStatus.COMPLETED) {
-                                    // Already completed, do nothing or allow uncheck
-                                } else {
+                                if (reminder.status != ReminderStatus.COMPLETED) {
                                     viewModel.markAsTaken(reminder)
                                 }
                             }
                         )
                     }
                 }
-                
+
                 // Today's Schedule Section
                 item {
                     Text(
@@ -197,9 +204,8 @@ fun HomeScreen(
                         modifier = Modifier.padding(top = if (overdueMedicines.isNotEmpty()) 8.dp else 0.dp, bottom = 8.dp)
                     )
                 }
-                
+
                 if (todaySchedule.isEmpty() && overdueMedicines.isEmpty() && completedMedicines.isEmpty()) {
-                    // Empty state
                     item {
                         Box(
                             modifier = Modifier
@@ -211,7 +217,7 @@ fun HomeScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.pill_reminder_logo),
+                                    painter = painterResource(id = R.drawable.logo),
                                     contentDescription = "Empty",
                                     modifier = Modifier.size(64.dp),
                                     tint = Color.Gray
@@ -242,23 +248,12 @@ fun HomeScreen(
                                 onMedClick(reminder.medicine.id)
                             },
                             onCheckboxClick = {
-                                when (reminder.status) {
-                                    ReminderStatus.COMPLETED -> {
-                                        // Already completed, do nothing
-                                    }
-                                    ReminderStatus.SKIPPED -> {
-                                        // Allow to mark as taken
-                                        viewModel.markAsTaken(reminder)
-                                    }
-                                    else -> {
-                                        viewModel.markAsTaken(reminder)
-                                    }
-                                }
+                                viewModel.markAsTaken(reminder)
                             }
                         )
                     }
                 }
-                
+
                 // Completed Section
                 if (completedMedicines.isNotEmpty()) {
                     item {
@@ -273,7 +268,7 @@ fun HomeScreen(
                             )
                         )
                     }
-                    
+
                     items(completedMedicines) { reminder ->
                         ReminderCard(
                             medicineName = reminder.medicine.name,
@@ -283,10 +278,8 @@ fun HomeScreen(
                             onCardClick = {
                                 onMedClick(reminder.medicine.id)
                             },
-                            onCheckboxClick = {
-                                // Completed items are read-only, do nothing
-                            },
-                            modifier = Modifier.alpha(0.5f) // Make completed items faded
+                            onCheckboxClick = { },
+                            modifier = Modifier.alpha(0.5f)
                         )
                     }
                 }
