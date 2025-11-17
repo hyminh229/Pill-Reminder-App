@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import nhom8.uth.pillreminderapp.ui.theme.DarkBlue
 import nhom8.uth.pillreminderapp.ui.theme.LightBlue
 import nhom8.uth.pillreminderapp.util.SoundItem
 
@@ -271,8 +272,8 @@ private fun SettingItem(
             Text(
                 text = value,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = LightBlue
+                fontWeight = FontWeight.SemiBold,
+                color = DarkBlue
             )
         }
     }
@@ -384,14 +385,14 @@ private fun SoundItemRow(
                     text = sound.title,
                     fontSize = 16.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) LightBlue else Color.Black
+                    color = if (isSelected) DarkBlue else Color.Black
                 )
                 
                 if (isSelected) {
                     Icon(
                         imageVector = Icons.Default.Settings,
                         contentDescription = "Selected",
-                        tint = LightBlue,
+                        tint = DarkBlue,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -407,7 +408,7 @@ private fun SoundItemRow(
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Preview sound",
-                    tint = LightBlue,
+                    tint = DarkBlue,
                     modifier = Modifier.size(20.dp)
                 )
             }
