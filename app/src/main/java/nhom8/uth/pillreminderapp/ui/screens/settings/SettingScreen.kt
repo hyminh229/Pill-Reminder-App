@@ -52,6 +52,13 @@ fun SettingScreen(
     
     val snackbarHostState = remember { SnackbarHostState() }
     
+    // Reload settings khi màn hình được hiển thị lại và availableSounds đã có dữ liệu
+    LaunchedEffect(availableSounds.isNotEmpty()) {
+        if (availableSounds.isNotEmpty()) {
+            viewModel.loadSettings()
+        }
+    }
+    
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)

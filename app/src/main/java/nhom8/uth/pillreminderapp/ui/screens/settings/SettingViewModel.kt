@@ -40,7 +40,7 @@ class SettingViewModel @Inject constructor(
     val reminderMode = MutableStateFlow("As device settings")
     
     init {
-        loadSettings()
+        // Load sounds trước, sau đó loadSettings() sẽ được gọi trong loadAvailableSounds()
         loadAvailableSounds()
     }
     
@@ -50,6 +50,8 @@ class SettingViewModel @Inject constructor(
     private fun loadAvailableSounds() {
         viewModelScope.launch {
             _availableSounds.value = soundHelper.getNotificationSounds()
+            // Sau khi load sounds, reload settings để hiển thị đúng tên
+            loadSettings()
         }
     }
     
@@ -92,7 +94,21 @@ class SettingViewModel @Inject constructor(
         val savedUri = preferencesManager.reminderToneUri
         if (!savedUri.isNullOrEmpty()) {
             val uri = soundHelper.stringToUri(savedUri)
-            _reminderTone.value = soundHelper.getSoundTitle(uri)
+            // Tìm sound item trong danh sách availableSounds để lấy tên chính xác
+            val soundItem = _availableSounds.value.find { it.uri == uri }
+            if (soundItem != null) {
+                _reminderTone.value = soundItem.title
+            } else {
+                // Fallback: thử dùng getSoundTitle, nhưng nếu trả về số (resource ID) thì dùng tên đã lưu
+                val titleFromUri = soundHelper.getSoundTitle(uri)
+                // Kiểm tra xem có phải là số (resource ID) không
+                if (titleFromUri.all { it.isDigit() } && titleFromUri.isNotEmpty()) {
+                    // Nếu là số, dùng tên đã lưu trong preferences
+                    _reminderTone.value = preferencesManager.reminderTone.ifEmpty { "Default" }
+                } else {
+                    _reminderTone.value = titleFromUri
+                }
+            }
         } else {
             _reminderTone.value = preferencesManager.reminderTone
         }
