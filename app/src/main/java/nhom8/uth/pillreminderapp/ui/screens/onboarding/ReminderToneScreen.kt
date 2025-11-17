@@ -18,6 +18,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,14 +32,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import nhom8.uth.pillreminderapp.ui.theme.OnboardingBlue
 import nhom8.uth.pillreminderapp.ui.theme.PillReminderAppTheme
+import nhom8.uth.pillreminderapp.util.SoundItem
 
 @Composable
-fun ReminderToneScreen(onNext: (String) -> Unit) {
-    var selectedTone by remember { mutableStateOf("Meow meow") }
+fun ReminderToneScreen(
+    viewModel: OnboardingViewModel = hiltViewModel(),
+    onNext: (String) -> Unit
+) {
+    var selectedSoundItem by remember { mutableStateOf<SoundItem?>(null) }
     var expanded by remember { mutableStateOf(false) }
-    val tones = listOf("Meow meow", "Default", "Chime", "Bell", "Alert")
+    var sounds by remember { mutableStateOf<List<SoundItem>>(emptyList()) }
+    
+    // Load sounds from res/raw
+    LaunchedEffect(Unit) {
+        sounds = viewModel.getAvailableSounds()
+        if (sounds.isNotEmpty()) {
+            selectedSoundItem = sounds.first()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -83,18 +97,23 @@ fun ReminderToneScreen(onNext: (String) -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = "Sound", color = Color.White, fontSize = 16.sp)
-                    Text(text = selectedTone, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(
+                        text = selectedSoundItem?.title ?: "Default",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.fillMaxWidth(0.8f)
                 ) {
-                    tones.forEach { tone ->
+                    sounds.forEach { sound ->
                         DropdownMenuItem(
-                            text = { Text(tone) },
+                            text = { Text(sound.title) },
                             onClick = {
-                                selectedTone = tone
+                                selectedSoundItem = sound
                                 expanded = false
                             }
                         )
@@ -111,14 +130,20 @@ fun ReminderToneScreen(onNext: (String) -> Unit) {
 
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { onNext(selectedTone) },
+                onClick = {
+                    selectedSoundItem?.let { soundItem ->
+                        viewModel.saveReminderTone(soundItem)
+                        onNext(soundItem.title)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF00838F) // Darker teal
-                )
+                ),
+                enabled = selectedSoundItem != null
             ) {
                 Text(
                     text = "Next",

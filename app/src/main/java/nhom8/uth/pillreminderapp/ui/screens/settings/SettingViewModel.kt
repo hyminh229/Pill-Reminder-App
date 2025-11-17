@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import nhom8.uth.pillreminderapp.util.NotificationHelper
 import nhom8.uth.pillreminderapp.util.PreferencesManager
 import nhom8.uth.pillreminderapp.util.SoundHelper
 import nhom8.uth.pillreminderapp.util.SoundItem
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager,
-    private val soundHelper: SoundHelper
+    private val soundHelper: SoundHelper,
+    private val notificationHelper: NotificationHelper
 ) : ViewModel() {
     
     // StateFlow cho reminder tone
@@ -56,9 +58,19 @@ class SettingViewModel @Inject constructor(
      */
     fun updateReminderTone(soundItem: SoundItem) {
         viewModelScope.launch {
+            android.util.Log.d("SettingViewModel", "Updating reminder tone to: ${soundItem.title}, URI: ${soundItem.uri}")
+            
             preferencesManager.reminderTone = soundItem.title
             preferencesManager.reminderToneUri = soundHelper.uriToString(soundItem.uri)
             _reminderTone.value = soundItem.title
+            
+            android.util.Log.d("SettingViewModel", "Saved URI: ${preferencesManager.reminderToneUri}")
+            
+            // Cập nhật notification channel với sound mới
+            // Trên Android 8.0+, cần xóa và tạo lại channel để thay đổi sound
+            notificationHelper.updateNotificationChannel()
+            
+            android.util.Log.d("SettingViewModel", "Notification channel updated")
         }
     }
     

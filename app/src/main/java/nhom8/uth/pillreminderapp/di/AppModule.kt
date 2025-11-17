@@ -84,8 +84,12 @@ abstract class AppModule {
          */
         @Provides
         @Singleton
-        fun provideNotificationHelper(@ApplicationContext context: Context): NotificationHelper {
-            return NotificationHelper(context)
+        fun provideNotificationHelper(
+            @ApplicationContext context: Context,
+            preferencesManager: PreferencesManager,
+            soundHelper: SoundHelper
+        ): NotificationHelper {
+            return NotificationHelper(context, preferencesManager, soundHelper)
         }
         
         /**

@@ -1,13 +1,17 @@
 package nhom8.uth.pillreminderapp.ui.screens.onboarding
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nhom8.uth.pillreminderapp.util.PreferencesManager
+import nhom8.uth.pillreminderapp.util.SoundHelper
+import nhom8.uth.pillreminderapp.util.SoundItem
 import javax.inject.Inject
 
 /**
@@ -15,7 +19,9 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager,
+    private val soundHelper: SoundHelper,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     
     private val _isFirstLaunch = MutableStateFlow(preferencesManager.isFirstLaunch)
@@ -38,12 +44,36 @@ class OnboardingViewModel @Inject constructor(
     }
     
     /**
-     * Lưu reminder tone preference
+     * Lấy danh sách sounds từ res/raw
+     */
+    fun getAvailableSounds(): List<SoundItem> {
+        return soundHelper.getNotificationSounds()
+    }
+    
+    /**
+     * Lưu reminder tone preference (từ SoundItem)
+     */
+    fun saveReminderTone(soundItem: SoundItem) {
+        viewModelScope.launch {
+            preferencesManager.reminderTone = soundItem.title
+            preferencesManager.reminderToneUri = soundHelper.uriToString(soundItem.uri)
+        }
+    }
+    
+    /**
+     * Lưu reminder tone preference (từ String - backward compatibility)
      */
     fun saveReminderTone(tone: String) {
         viewModelScope.launch {
             preferencesManager.reminderTone = tone
         }
+    }
+    
+    /**
+     * Lấy Context (để sử dụng trong Composable nếu cần)
+     */
+    fun getContext(): Context {
+        return context
     }
     
     /**
