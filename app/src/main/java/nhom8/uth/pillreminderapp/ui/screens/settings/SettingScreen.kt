@@ -10,9 +10,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -159,11 +161,13 @@ fun SettingScreen(
                 SoundPickerDialog(
                     sounds = availableSounds,
                     currentSound = reminderTone,
+                    viewModel = viewModel,
                     onSoundSelected = { soundItem ->
                         viewModel.updateReminderTone(soundItem)
                         showSoundPicker = false
                     },
                     onDismiss = {
+                        viewModel.stopPreview()
                         showSoundPicker = false
                     }
                 )
@@ -274,9 +278,17 @@ private fun SettingItem(
 private fun SoundPickerDialog(
     sounds: List<SoundItem>,
     currentSound: String,
+    viewModel: SettingViewModel,
     onSoundSelected: (SoundItem) -> Unit,
     onDismiss: () -> Unit
 ) {
+    // Dừng preview khi dialog đóng
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.stopPreview()
+        }
+    }
+    
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -324,6 +336,7 @@ private fun SoundPickerDialog(
                         SoundItemRow(
                             sound = sound,
                             isSelected = sound.title == currentSound,
+                            viewModel = viewModel,
                             onClick = {
                                 onSoundSelected(sound)
                             }
@@ -342,28 +355,51 @@ private fun SoundPickerDialog(
 private fun SoundItemRow(
     sound: SoundItem,
     isSelected: Boolean,
+    viewModel: SettingViewModel,
     onClick: () -> Unit
 ) {
     Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = sound.title,
-                fontSize = 16.sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) LightBlue else Color.Black
-            )
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(onClick = onClick),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = sound.title,
+                    fontSize = 16.sp,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) LightBlue else Color.Black
+                )
+                
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Selected",
+                        tint = LightBlue,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
             
-            if (isSelected) {
+            // Preview button
+            IconButton(
+                onClick = {
+                    viewModel.previewSound(sound)
+                },
+                modifier = Modifier.size(40.dp)
+            ) {
                 Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Selected",
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Preview sound",
                     tint = LightBlue,
                     modifier = Modifier.size(20.dp)
                 )

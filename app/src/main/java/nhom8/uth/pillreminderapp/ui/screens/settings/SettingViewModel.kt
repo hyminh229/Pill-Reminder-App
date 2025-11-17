@@ -98,5 +98,19 @@ class SettingViewModel @Inject constructor(
         }
         _theme.value = preferencesManager.theme
     }
+    
+    /**
+     * Phát âm thanh để nghe thử (preview)
+     */
+    fun previewSound(soundItem: SoundItem) {
+        soundHelper.previewSound(soundItem.uri)
+    }
+    
+    /**
+     * Dừng phát âm thanh preview
+     */
+    fun stopPreview() {
+        soundHelper.stopPreview()
+    }
 }
 

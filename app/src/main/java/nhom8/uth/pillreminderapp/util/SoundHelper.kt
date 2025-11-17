@@ -2,6 +2,7 @@ package nhom8.uth.pillreminderapp.util
 
 import android.content.Context
 import android.content.res.Resources
+import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,6 +26,8 @@ data class SoundItem(
 class SoundHelper @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+    
+    private var currentRingtone: Ringtone? = null
     
     /**
      * Lấy danh sách notification sounds từ res/raw
@@ -134,6 +137,37 @@ class SoundHelper @Inject constructor(
             } catch (e: Exception) {
                 RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             }
+        }
+    }
+    
+    /**
+     * Phát âm thanh để nghe thử (preview)
+     */
+    fun previewSound(uri: Uri) {
+        try {
+            // Dừng âm thanh hiện tại nếu đang phát
+            stopPreview()
+            
+            // Phát âm thanh mới
+            val ringtone = RingtoneManager.getRingtone(context, uri)
+            if (ringtone != null) {
+                currentRingtone = ringtone
+                ringtone.play()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    
+    /**
+     * Dừng phát âm thanh preview
+     */
+    fun stopPreview() {
+        try {
+            currentRingtone?.stop()
+            currentRingtone = null
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

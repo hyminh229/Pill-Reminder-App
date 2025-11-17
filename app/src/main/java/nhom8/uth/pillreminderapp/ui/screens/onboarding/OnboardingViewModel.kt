@@ -99,5 +99,19 @@ class OnboardingViewModel @Inject constructor(
     fun getReminderTone(): String {
         return preferencesManager.reminderTone
     }
+    
+    /**
+     * Phát âm thanh để nghe thử (preview)
+     */
+    fun previewSound(soundItem: SoundItem) {
+        soundHelper.previewSound(soundItem.uri)
+    }
+    
+    /**
+     * Dừng phát âm thanh preview
+     */
+    fun stopPreview() {
+        soundHelper.stopPreview()
+    }
 }
 
