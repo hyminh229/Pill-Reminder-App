@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    // Accompanist SwipeRefresh (for pull-to-refresh)
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")

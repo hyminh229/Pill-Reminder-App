@@ -34,6 +34,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -65,6 +67,9 @@ fun HomeScreen(
     val todaySchedule by viewModel.todaySchedule.collectAsState()
     val completedMedicines by viewModel.completedMedicines.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    // Pull to refresh state
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
     Scaffold(
         topBar = {
@@ -119,7 +124,12 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = false,
                     onClick = onNavigateToStatistics,
-                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Progress") },
+                    icon = {
+                        Icon(
+                            Icons.AutoMirrored.Filled.List,
+                            contentDescription = "Progress"
+                        )
+                    },
                     label = { Text("Progress") },
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = Color.Transparent,
@@ -145,143 +155,152 @@ fun HomeScreen(
             }
         }
     ) { paddingValues ->
-        if (isLoading) {
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { viewModel.loadMedicines() }
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                // Overdue Section
-                if (overdueMedicines.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = "Overdue",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-
-                    items(overdueMedicines) { reminder ->
-                        ReminderCard(
-                            medicineName = reminder.medicine.name,
-                            reminderTime = reminder.reminderTime,
-                            status = reminder.status,
-                            intakeAdvice = reminder.medicine.intakeAdvice,
-                            onCardClick = {
-                                onMedClick(reminder.medicine.id)
-                            },
-                            onCheckboxClick = {
-                                if (reminder.status != ReminderStatus.COMPLETED) {
-                                    viewModel.markAsTaken(reminder)
-                                }
-                            }
-                        )
-                    }
-                }
-
-                // Today's Schedule Section
-                item {
-                    Text(
-                        text = "Today's Schedule",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        modifier = Modifier.padding(top = if (overdueMedicines.isNotEmpty()) 8.dp else 0.dp, bottom = 8.dp)
+                if (isLoading && overdueMedicines.isEmpty() && todaySchedule.isEmpty() && completedMedicines.isEmpty()) {
+                    // Chỉ hiển thị loading indicator khi chưa có dữ liệu
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
                     )
-                }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(vertical = 16.dp)
+                    ) {
+                    // Overdue Section
+                    if (overdueMedicines.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "Overdue",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
 
-                if (todaySchedule.isEmpty() && overdueMedicines.isEmpty() && completedMedicines.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 64.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.logo),
-                                    contentDescription = "Empty",
-                                    modifier = Modifier.size(64.dp),
-                                    tint = Color.Gray
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = "No medicines scheduled",
-                                    fontSize = 16.sp,
-                                    color = Color.Gray
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Tap the + button to add a medicine",
-                                    fontSize = 14.sp,
-                                    color = Color.Gray
-                                )
-                            }
+                        items(overdueMedicines) { reminder ->
+                            ReminderCard(
+                                medicineName = reminder.medicine.name,
+                                reminderTime = reminder.reminderTime,
+                                status = reminder.status,
+                                intakeAdvice = reminder.medicine.intakeAdvice,
+                                onCardClick = {
+                                    onMedClick(reminder.medicine.id)
+                                },
+                                onCheckboxClick = {
+                                    if (reminder.status != ReminderStatus.COMPLETED) {
+                                        viewModel.markAsTaken(reminder)
+                                    }
+                                }
+                            )
                         }
                     }
-                } else {
-                    items(todaySchedule) { reminder ->
-                        ReminderCard(
-                            medicineName = reminder.medicine.name,
-                            reminderTime = reminder.reminderTime,
-                            status = reminder.status,
-                            intakeAdvice = reminder.medicine.intakeAdvice,
-                            onCardClick = {
-                                onMedClick(reminder.medicine.id)
-                            },
-                            onCheckboxClick = {
-                                viewModel.markAsTaken(reminder)
-                            }
-                        )
-                    }
-                }
 
-                // Completed Section
-                if (completedMedicines.isNotEmpty()) {
+                    // Today's Schedule Section
                     item {
                         Text(
-                            text = "Completed",
+                            text = "Today's Schedule",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
                             modifier = Modifier.padding(
-                                top = if (todaySchedule.isNotEmpty() || overdueMedicines.isNotEmpty()) 8.dp else 0.dp,
+                                top = if (overdueMedicines.isNotEmpty()) 8.dp else 0.dp,
                                 bottom = 8.dp
                             )
                         )
                     }
 
-                    items(completedMedicines) { reminder ->
-                        ReminderCard(
-                            medicineName = reminder.medicine.name,
-                            reminderTime = reminder.reminderTime,
-                            status = reminder.status,
-                            intakeAdvice = reminder.medicine.intakeAdvice,
-                            onCardClick = {
-                                onMedClick(reminder.medicine.id)
-                            },
-                            onCheckboxClick = { },
-                            modifier = Modifier.alpha(0.5f)
-                        )
+                    if (todaySchedule.isEmpty() && overdueMedicines.isEmpty() && completedMedicines.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 64.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.logo),
+                                        contentDescription = "Empty",
+                                        modifier = Modifier.size(64.dp),
+                                        tint = Color.Gray
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text(
+                                        text = "No medicines scheduled",
+                                        fontSize = 16.sp,
+                                        color = Color.Gray
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Tap the + button to add a medicine",
+                                        fontSize = 14.sp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        items(todaySchedule) { reminder ->
+                            ReminderCard(
+                                medicineName = reminder.medicine.name,
+                                reminderTime = reminder.reminderTime,
+                                status = reminder.status,
+                                intakeAdvice = reminder.medicine.intakeAdvice,
+                                onCardClick = {
+                                    onMedClick(reminder.medicine.id)
+                                },
+                                onCheckboxClick = {
+                                    viewModel.markAsTaken(reminder)
+                                }
+                            )
+                        }
                     }
+
+                    // Completed Section
+                    if (completedMedicines.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "Completed",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                modifier = Modifier.padding(
+                                    top = if (todaySchedule.isNotEmpty() || overdueMedicines.isNotEmpty()) 8.dp else 0.dp,
+                                    bottom = 8.dp
+                                )
+                            )
+                        }
+
+                        items(completedMedicines) { reminder ->
+                            ReminderCard(
+                                medicineName = reminder.medicine.name,
+                                reminderTime = reminder.reminderTime,
+                                status = reminder.status,
+                                intakeAdvice = reminder.medicine.intakeAdvice,
+                                onCardClick = {
+                                    onMedClick(reminder.medicine.id)
+                                },
+                                onCheckboxClick = { },
+                                modifier = Modifier.alpha(0.5f)
+                            )
+                        }
+                    }
+                }
                 }
             }
         }
