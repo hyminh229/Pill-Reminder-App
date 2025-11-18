@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -42,67 +43,60 @@ class NotificationHelper @Inject constructor(
     }
     
     /**
-     * Cập nhật notification channel với sound từ preferences
-     * Trên Android 8.0+, cần xóa và tạo lại channel để thay đổi sound
+     * Cập nhật notification channel
+     * Lưu ý: Notification channel trên Android 8.0+ không hỗ trợ custom sound từ resource hoặc MediaStore
+     * Sound sẽ được phát trực tiếp khi hiển thị notification
      */
     fun updateNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val soundUri = getSoundUri()
             android.util.Log.d("NotificationHelper", "=== Updating notification channel ===")
-            android.util.Log.d("NotificationHelper", "Sound URI from preferences: $soundUri")
             
             // Kiểm tra channel hiện tại
             val existingChannel = notificationManager.getNotificationChannel(Constants.NOTIFICATION_CHANNEL_ID)
-            if (existingChannel != null) {
-                android.util.Log.d("NotificationHelper", "Existing channel found - Sound: ${existingChannel.sound}")
-                android.util.Log.d("NotificationHelper", "Existing channel - Importance: ${existingChannel.importance}")
+            if (existingChannel == null) {
+                android.util.Log.d("NotificationHelper", "No existing channel found, creating new one")
                 
-                // Chỉ xóa và tạo lại nếu sound khác
-                if (existingChannel.sound != soundUri) {
-                    android.util.Log.d("NotificationHelper", "Sound changed, deleting old channel...")
+                // Tạo channel mới
+                val channel = NotificationChannel(
+                    Constants.NOTIFICATION_CHANNEL_ID,
+                    Constants.NOTIFICATION_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = Constants.NOTIFICATION_CHANNEL_DESCRIPTION
+                    enableVibration(true)
+                    enableLights(true)
+                    setShowBadge(true)
+                    // Tắt sound trong channel để tránh phát âm thanh default
+                    // Sound sẽ được phát trực tiếp khi hiển thị notification
+                    setSound(null, null)
+                }
+                notificationManager.createNotificationChannel(channel)
+                android.util.Log.d("NotificationHelper", "New channel created")
+            } else {
+                // Kiểm tra xem channel có sound không, nếu có thì xóa và tạo lại để tắt sound
+                if (existingChannel.sound != null) {
+                    android.util.Log.d("NotificationHelper", "Channel has sound, recreating to disable sound")
                     try {
                         notificationManager.deleteNotificationChannel(Constants.NOTIFICATION_CHANNEL_ID)
-                        android.util.Log.d("NotificationHelper", "Old channel deleted")
+                        val channel = NotificationChannel(
+                            Constants.NOTIFICATION_CHANNEL_ID,
+                            Constants.NOTIFICATION_CHANNEL_NAME,
+                            NotificationManager.IMPORTANCE_HIGH
+                        ).apply {
+                            description = Constants.NOTIFICATION_CHANNEL_DESCRIPTION
+                            enableVibration(true)
+                            enableLights(true)
+                            setShowBadge(true)
+                            setSound(null, null)
+                        }
+                        notificationManager.createNotificationChannel(channel)
+                        android.util.Log.d("NotificationHelper", "Channel recreated with sound disabled")
                     } catch (e: Exception) {
-                        android.util.Log.e("NotificationHelper", "Error deleting channel: ${e.message}")
+                        android.util.Log.e("NotificationHelper", "Error recreating channel: ${e.message}")
                     }
                 } else {
-                    android.util.Log.d("NotificationHelper", "Sound unchanged, no update needed")
-                    return
+                    android.util.Log.d("NotificationHelper", "Channel already exists without sound - Importance: ${existingChannel.importance}")
                 }
-            } else {
-                android.util.Log.d("NotificationHelper", "No existing channel found, creating new one")
-            }
-            
-            // Tạo channel mới với sound từ preferences
-            val channel = NotificationChannel(
-                Constants.NOTIFICATION_CHANNEL_ID,
-                Constants.NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = Constants.NOTIFICATION_CHANNEL_DESCRIPTION
-                enableVibration(true)
-                enableLights(true)
-                setShowBadge(true)
-                // Set sound từ preferences
-                setSound(
-                    soundUri,
-                    android.media.AudioAttributes.Builder()
-                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION)
-                        .build()
-                )
-            }
-            notificationManager.createNotificationChannel(channel)
-            android.util.Log.d("NotificationHelper", "New channel created with sound: $soundUri")
-            
-            // Verify channel was created correctly
-            val createdChannel = notificationManager.getNotificationChannel(Constants.NOTIFICATION_CHANNEL_ID)
-            if (createdChannel != null) {
-                android.util.Log.d("NotificationHelper", "Channel verified - Sound URI: ${createdChannel.sound}")
-                android.util.Log.d("NotificationHelper", "Channel verified - Importance: ${createdChannel.importance}")
-            } else {
-                android.util.Log.e("NotificationHelper", "ERROR: Failed to create channel!")
             }
             android.util.Log.d("NotificationHelper", "=== Channel update complete ===")
         } else {
@@ -112,13 +106,30 @@ class NotificationHelper @Inject constructor(
     
     /**
      * Lấy URI của sound từ preferences
+     * Trả về URI gốc (resource URI hoặc default URI)
      */
     private fun getSoundUri(): Uri {
         val savedUri = preferencesManager.reminderToneUri
+        
         return if (!savedUri.isNullOrEmpty()) {
             soundHelper.stringToUri(savedUri) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         } else {
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        }
+    }
+    
+    /**
+     * Phát âm thanh notification trực tiếp
+     * Sử dụng khi notification channel không hỗ trợ custom sound
+     */
+    private fun playNotificationSound() {
+        try {
+            val soundUri = getSoundUri()
+            val ringtone = RingtoneManager.getRingtone(context, soundUri)
+            ringtone?.play()
+            android.util.Log.d("NotificationHelper", "Playing notification sound: $soundUri")
+        } catch (e: Exception) {
+            android.util.Log.e("NotificationHelper", "Error playing notification sound: ${e.message}", e)
         }
     }
     
@@ -134,6 +145,10 @@ class NotificationHelper @Inject constructor(
         notificationId: Int
     ) {
         android.util.Log.d("NotificationHelper", "showReminderNotification called: $medicineName, $reminderTime")
+        
+        // Cập nhật notification channel với sound mới nhất từ preferences
+        // Điều này đảm bảo notification luôn sử dụng sound mới nhất
+        updateNotificationChannel()
         
         // Format: "Medication at {time}" + "{medicineName} {quantity} {unit}"
         val title = "Medication at $reminderTime"
@@ -212,15 +227,13 @@ class NotificationHelper @Inject constructor(
             .setAutoCancel(true)
             .apply {
                 // Trên Android < 8.0, set sound trong builder
-                // Trên Android 8.0+, sound được set trong notification channel
+                // Trên Android 8.0+, không set sound (channel đã tắt sound, sẽ phát trực tiếp)
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                     setSound(soundUri)
                     android.util.Log.d("NotificationHelper", "Set sound in builder for Android < 8.0")
-                } else {
-                    // Verify channel sound
-                    val channel = notificationManager.getNotificationChannel(Constants.NOTIFICATION_CHANNEL_ID)
-                    android.util.Log.d("NotificationHelper", "Channel sound: ${channel?.sound}")
                 }
+                // Trên Android 8.0+, không set sound để tránh phát âm thanh default
+                // Sound sẽ được phát trực tiếp bằng playNotificationSound()
             }
             .setDefaults(NotificationCompat.DEFAULT_VIBRATE or NotificationCompat.DEFAULT_LIGHTS)
             .addAction(
@@ -242,6 +255,13 @@ class NotificationHelper @Inject constructor(
         
         android.util.Log.d("NotificationHelper", "Notifying with ID: $notificationId")
         notificationManager.notify(notificationId, notification)
+        
+        // Phát âm thanh trực tiếp vì notification channel không hỗ trợ custom sound
+        // Phát âm thanh custom (hoặc default nếu chọn default)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            playNotificationSound()
+        }
+        
         android.util.Log.d("NotificationHelper", "Notification sent successfully")
     }
     
@@ -253,6 +273,9 @@ class NotificationHelper @Inject constructor(
         message: String,
         notificationId: Int = System.currentTimeMillis().toInt()
     ) {
+        // Cập nhật notification channel với sound mới nhất từ preferences
+        updateNotificationChannel()
+        
         // Intent để mở app khi click vào notification
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -278,14 +301,21 @@ class NotificationHelper @Inject constructor(
             .setAutoCancel(true)
             .apply {
                 // Trên Android < 8.0, set sound trong builder
-                // Trên Android 8.0+, sound được set trong notification channel
+                // Trên Android 8.0+, không set sound (channel đã tắt sound, sẽ phát trực tiếp)
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                     setSound(soundUri)
                 }
+                // Trên Android 8.0+, không set sound để tránh phát âm thanh default
+                // Sound sẽ được phát trực tiếp bằng playNotificationSound()
             }
             .setDefaults(NotificationCompat.DEFAULT_VIBRATE or NotificationCompat.DEFAULT_LIGHTS)
             .build()
         
         notificationManager.notify(notificationId, notification)
+        
+        // Phát âm thanh trực tiếp trên Android 8.0+ vì notification channel không hỗ trợ custom sound
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            playNotificationSound()
+        }
     }
 }

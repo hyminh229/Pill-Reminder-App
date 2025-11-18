@@ -21,6 +21,7 @@ class PreferencesManager(context: Context) {
         private const val KEY_NICKNAME = "nickname"
         private const val KEY_REMINDER_TONE = "reminder_tone"
         private const val KEY_REMINDER_TONE_URI = "reminder_tone_uri"
+        private const val KEY_REMINDER_TONE_RAW_NAME = "reminder_tone_raw_name"
         private const val KEY_THEME = "theme"
     }
 
@@ -40,6 +41,11 @@ class PreferencesManager(context: Context) {
     var reminderToneUri: String?
         get() = prefs.getString(KEY_REMINDER_TONE_URI, null)
         set(value) = prefs.edit().putString(KEY_REMINDER_TONE_URI, value).apply()
+    
+    // Lưu raw resource name để có thể convert sang file URI cho notification channel
+    var reminderToneRawName: String?
+        get() = prefs.getString(KEY_REMINDER_TONE_RAW_NAME, null)
+        set(value) = prefs.edit().putString(KEY_REMINDER_TONE_RAW_NAME, value).apply()
 
     var theme: String
         get() = prefs.getString(KEY_THEME, "Light") ?: "Light"

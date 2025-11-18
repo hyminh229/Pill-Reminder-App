@@ -64,9 +64,11 @@ class SettingViewModel @Inject constructor(
             
             preferencesManager.reminderTone = soundItem.title
             preferencesManager.reminderToneUri = soundHelper.uriToString(soundItem.uri)
+            preferencesManager.reminderToneRawName = soundItem.rawResourceName
             _reminderTone.value = soundItem.title
             
             android.util.Log.d("SettingViewModel", "Saved URI: ${preferencesManager.reminderToneUri}")
+            android.util.Log.d("SettingViewModel", "Saved raw name: ${preferencesManager.reminderToneRawName}")
             
             // Cập nhật notification channel với sound mới
             // Trên Android 8.0+, cần xóa và tạo lại channel để thay đổi sound

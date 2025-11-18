@@ -53,6 +53,17 @@
                 <action android:name="nhom8.uth.pillreminderapp.ACTION_REMIND_LATER" />
             </intent-filter>
         </receiver>
+        
+        <!-- FileProvider để chia sẻ file cho notification channel -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

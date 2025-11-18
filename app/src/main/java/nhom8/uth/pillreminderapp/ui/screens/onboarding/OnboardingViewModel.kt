@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import nhom8.uth.pillreminderapp.util.NotificationHelper
 import nhom8.uth.pillreminderapp.util.PreferencesManager
 import nhom8.uth.pillreminderapp.util.SoundHelper
 import nhom8.uth.pillreminderapp.util.SoundItem
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class OnboardingViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager,
     private val soundHelper: SoundHelper,
+    private val notificationHelper: NotificationHelper,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
     
@@ -57,6 +59,9 @@ class OnboardingViewModel @Inject constructor(
         viewModelScope.launch {
             preferencesManager.reminderTone = soundItem.title
             preferencesManager.reminderToneUri = soundHelper.uriToString(soundItem.uri)
+            preferencesManager.reminderToneRawName = soundItem.rawResourceName
+            // Cập nhật notification channel với sound mới
+            notificationHelper.updateNotificationChannel()
         }
     }
     
