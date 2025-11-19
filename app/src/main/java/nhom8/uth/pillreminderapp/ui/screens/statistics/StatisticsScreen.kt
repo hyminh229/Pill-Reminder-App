@@ -438,7 +438,7 @@ private fun HistoryListItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Column 1: Date
@@ -446,31 +446,38 @@ private fun HistoryListItem(
             text = dateString,
             fontSize = 15.sp,
             color = Color.Black,
-            modifier = Modifier.weight(1.2f),
+            modifier = Modifier.widthIn(min = 100.dp),
             fontWeight = FontWeight.Normal
         )
+        
+        // Spacer giữa date và medicine name
+        Spacer(modifier = Modifier.width(16.dp))
         
         // Column 2: Medicine Name
         Text(
             text = medicineName,
             fontSize = 15.sp,
             color = Color.Black,
-            modifier = Modifier.weight(1.8f),
+            modifier = Modifier.weight(1f),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Normal
         )
         
+        // Spacer giữa medicine name và dosage
+        Spacer(modifier = Modifier.width(12.dp))
+        
         // Column 3: Dosage with icon
         Row(
-            modifier = Modifier.weight(1.3f),
+            modifier = Modifier.widthIn(min = 80.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .background(Color(0xFF9E9E9E), CircleShape)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_pills2),
+                contentDescription = "Pills",
+                tint = Color.Gray,
+                modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -481,12 +488,15 @@ private fun HistoryListItem(
             )
         }
         
+        // Spacer giữa dosage và time
+        Spacer(modifier = Modifier.width(12.dp))
+        
         // Column 4: Time
         Text(
             text = historyItem.history.takenTime,
             fontSize = 15.sp,
             color = Color.Black,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.widthIn(min = 80.dp),
             textAlign = TextAlign.End,
             fontWeight = FontWeight.Normal
         )

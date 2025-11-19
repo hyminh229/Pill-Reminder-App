@@ -46,7 +46,7 @@ fun GetStartedScreen(onNavigate: () -> Unit) {
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                painter = painterResource(id = R.drawable.pill_reminder_logo),
                 contentDescription = "Pill Reminder Logo",
                 modifier = Modifier.size(150.dp)
             )
