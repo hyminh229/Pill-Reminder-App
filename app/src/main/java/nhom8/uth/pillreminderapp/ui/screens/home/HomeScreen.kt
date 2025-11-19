@@ -1,6 +1,7 @@
 package nhom8.uth.pillreminderapp.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
@@ -73,28 +75,31 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.logo),
-                            contentDescription = "Pills Reminder",
-                            modifier = Modifier.size(32.dp),
-                            tint = Color(0xFF5FB9E6)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Pills Reminder",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+    TopAppBar(
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Logo icon
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_pill),
+                    contentDescription = "Pills Reminder",
+                    modifier = Modifier.size(32.dp),
+                    tint = Color(0xFF5FB9E6) // Màu xanh cho logo
                 )
-            )
+                Spacer(modifier = Modifier.width(12.dp))
+                // Text "Pills Reminder"
+                Text(
+                    text = "Pills Reminder",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
         },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White
+        )
+    )
+},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddMedClick,
@@ -178,33 +183,53 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(vertical = 16.dp)
                     ) {
-                    // Overdue Section
+                    // Overdue Section with blue border
                     if (overdueMedicines.isNotEmpty()) {
                         item {
-                            Text(
-                                text = "Overdue",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                        }
-
-                        items(overdueMedicines) { reminder ->
-                            ReminderCard(
-                                medicineName = reminder.medicine.name,
-                                reminderTime = reminder.reminderTime,
-                                status = reminder.status,
-                                intakeAdvice = reminder.medicine.intakeAdvice,
-                                onCardClick = {
-                                    onMedClick(reminder.medicine.id)
-                                },
-                                onCheckboxClick = {
-                                    if (reminder.status != ReminderStatus.COMPLETED) {
-                                        viewModel.markAsTaken(reminder)
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        width = 2.dp,
+                                        color = Color(0xFF5FB9E6), // Light blue border
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .background(
+                                        color = Color.White,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    text = "Overdue",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black,
+                                    modifier = Modifier.padding(bottom = 12.dp)
+                                )
+                                
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    overdueMedicines.forEach { reminder ->
+                                        ReminderCard(
+                                            medicineName = reminder.medicine.name,
+                                            reminderTime = reminder.reminderTime,
+                                            status = reminder.status,
+                                            intakeAdvice = reminder.medicine.intakeAdvice,
+                                            onCardClick = {
+                                                onMedClick(reminder.medicine.id)
+                                            },
+                                            onCheckboxClick = {
+                                                if (reminder.status != ReminderStatus.COMPLETED) {
+                                                    viewModel.markAsTaken(reminder)
+                                                }
+                                            },
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
                                     }
                                 }
-                            )
+                            }
                         }
                     }
 

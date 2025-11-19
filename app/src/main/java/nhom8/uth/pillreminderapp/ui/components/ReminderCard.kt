@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,16 +40,17 @@ fun ReminderCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Color(0xFFF5F5F5), // Light gray background
+                color = Color.White, // White background for card
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onCardClick)
             .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // Pill icon
         Icon(
-            painter = painterResource(id = R.drawable.pill_reminder_logo),
+            painter = painterResource(id = R.drawable.ic_pill),
             contentDescription = "Pill",
             modifier = Modifier.size(24.dp),
             tint = Color.Gray
@@ -82,14 +82,14 @@ fun ReminderCard(
                 
                 Spacer(modifier = Modifier.width(8.dp))
                 
-                // Status badge
+                // Status badge with "-" prefix
                 Text(
                     text = when (status) {
-                        ReminderStatus.COMPLETED -> "• Completed"
-                        ReminderStatus.BEFORE_EATING -> "• Before Eating"
-                        ReminderStatus.SKIPPED -> "• Skipped"
-                        ReminderStatus.MISSED -> "• Missed"
-                        ReminderStatus.PENDING -> "• Pending"
+                        ReminderStatus.COMPLETED -> "- Completed"
+                        ReminderStatus.BEFORE_EATING -> "- Before Eating"
+                        ReminderStatus.SKIPPED -> "- Skipped"
+                        ReminderStatus.MISSED -> "- Missed"
+                        ReminderStatus.PENDING -> "- Pending"
                     },
                     fontSize = 14.sp,
                     color = Color.Gray
@@ -99,18 +99,18 @@ fun ReminderCard(
         
         Spacer(modifier = Modifier.width(8.dp))
         
-        // Checkbox/Checkmark
+        // Checkbox/Checkmark on the right
         IconButton(
             onClick = onCheckboxClick,
             modifier = Modifier.size(40.dp)
         ) {
             if (status == ReminderStatus.COMPLETED) {
-                // Checkmark in filled circle
+                // Checkmark in grey filled circle
                 Box(
                     modifier = Modifier
                         .size(24.dp)
                         .clip(CircleShape)
-                        .background(Color.Black),
+                        .background(Color(0xFF9E9E9E)), // Grey background
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -126,17 +126,9 @@ fun ReminderCard(
                     modifier = Modifier
                         .size(24.dp)
                         .clip(CircleShape)
-                        .border(2.dp, Color.Black, CircleShape)
+                        .border(2.dp, Color(0xFF9E9E9E), CircleShape) // Grey border
                 )
             }
         }
-        
-        // Arrow icon
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = "Navigate",
-            modifier = Modifier.size(20.dp),
-            tint = Color.Gray
-        )
     }
 }

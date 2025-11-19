@@ -114,7 +114,7 @@ fun AddMedScreen(
             item {
                 Column {
                     Text(
-                        text = "Pills name:",
+                        text = "Pills name",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black,
@@ -123,11 +123,16 @@ fun AddMedScreen(
                     OutlinedTextField(
                         value = medicineName,
                         onValueChange = { viewModel.updateName(it) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = Color(0xFFF5F5F5),
+                                shape = RoundedCornerShape(12.dp)
+                            ),
                         placeholder = { Text("Add name") },
                         leadingIcon = {
                             Icon(
-                                painter = painterResource(id = R.drawable.pill_reminder_logo),
+                                painter = painterResource(id = R.drawable.ic_pill),
                                 contentDescription = "Pill",
                                 tint = Color.Gray,
                                 modifier = Modifier.size(20.dp)
@@ -148,8 +153,10 @@ fun AddMedScreen(
                         },
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = LightBlue,
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFF5F5F5),
+                            unfocusedContainerColor = Color(0xFFF5F5F5)
                         )
                     )
                 }
@@ -164,7 +171,7 @@ fun AddMedScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Intake advice:",
+                            text = "Intake advice",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.Black
@@ -178,6 +185,10 @@ fun AddMedScreen(
                                 readOnly = true,
                                 modifier = Modifier
                                     .width(150.dp)
+                                    .background(
+                                        color = Color(0xFFF5F5F5),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
                                     .clickable { intakeAdviceExpanded = true },
                                 trailingIcon = {
                                     Icon(
@@ -188,8 +199,10 @@ fun AddMedScreen(
                                 },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = LightBlue,
-                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                    focusedBorderColor = Color.Transparent,
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedContainerColor = Color(0xFFF5F5F5),
+                                    unfocusedContainerColor = Color(0xFFF5F5F5)
                                 )
                             )
                             DropdownMenu(
@@ -224,10 +237,15 @@ fun AddMedScreen(
                                     viewModel.updateQuantity(qty)
                                 }
                             },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(
+                                    color = Color(0xFFF5F5F5),
+                                    shape = RoundedCornerShape(12.dp)
+                                ),
                             leadingIcon = {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.pill_reminder_logo),
+                                    painter = painterResource(id = R.drawable.ic_pills2),
                                     contentDescription = "Quantity",
                                     tint = Color.Gray,
                                     modifier = Modifier.size(20.dp)
@@ -235,8 +253,10 @@ fun AddMedScreen(
                             },
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = LightBlue,
-                                unfocusedBorderColor = Color(0xFFE0E0E0)
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedContainerColor = Color(0xFFF5F5F5),
+                                unfocusedContainerColor = Color(0xFFF5F5F5)
                             )
                         )
                         
@@ -248,6 +268,10 @@ fun AddMedScreen(
                                 readOnly = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .background(
+                                        color = Color(0xFFF5F5F5),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
                                     .clickable { unitExpanded = true },
                                 trailingIcon = {
                                     Icon(
@@ -258,8 +282,10 @@ fun AddMedScreen(
                                 },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = LightBlue,
-                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                    focusedBorderColor = Color.Transparent,
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedContainerColor = Color(0xFFF5F5F5),
+                                    unfocusedContainerColor = Color(0xFFF5F5F5)
                                 )
                             )
                             DropdownMenu(
@@ -291,7 +317,7 @@ fun AddMedScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Start date:",
+                            text = "Start date",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.Black
@@ -313,6 +339,10 @@ fun AddMedScreen(
                                 readOnly = true,
                                 modifier = Modifier
                                     .width(150.dp)
+                                    .background(
+                                        color = Color(0xFFF5F5F5),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
                                     .clickable { startDateOptionExpanded = true },
                                 trailingIcon = {
                                     Icon(
@@ -323,8 +353,10 @@ fun AddMedScreen(
                                 },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = LightBlue,
-                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                    focusedBorderColor = Color.Transparent,
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedContainerColor = Color(0xFFF5F5F5),
+                                    unfocusedContainerColor = Color(0xFFF5F5F5)
                                 )
                             )
                             
@@ -359,6 +391,10 @@ fun AddMedScreen(
                         readOnly = true,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                color = Color(0xFFF5F5F5),
+                                shape = RoundedCornerShape(12.dp)
+                            )
                             .clickable { showEndDatePicker = true },
                         placeholder = { Text("Due date") },
                         leadingIcon = {
@@ -370,8 +406,10 @@ fun AddMedScreen(
                         },
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = LightBlue,
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFF5F5F5),
+                            unfocusedContainerColor = Color(0xFFF5F5F5)
                         )
                     )
                 }
@@ -381,7 +419,7 @@ fun AddMedScreen(
             item {
                 Column {
                     Text(
-                        text = "Notification:",
+                        text = "Notification",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black,
@@ -401,7 +439,12 @@ fun AddMedScreen(
                                     value = time,
                                     onValueChange = {},
                                     readOnly = true,
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .background(
+                                            color = Color(0xFFF5F5F5),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ),
                                     leadingIcon = {
                                         Icon(
                                             imageVector = Icons.Default.Notifications,
@@ -411,8 +454,10 @@ fun AddMedScreen(
                                     },
                                     shape = RoundedCornerShape(12.dp),
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = LightBlue,
-                                        unfocusedBorderColor = Color(0xFFE0E0E0)
+                                        focusedBorderColor = Color.Transparent,
+                                        unfocusedBorderColor = Color.Transparent,
+                                        focusedContainerColor = Color(0xFFF5F5F5),
+                                        unfocusedContainerColor = Color(0xFFF5F5F5)
                                     )
                                 )
                                 
@@ -469,6 +514,10 @@ fun AddMedScreen(
                         readOnly = true,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                color = Color(0xFFF5F5F5),
+                                shape = RoundedCornerShape(12.dp)
+                            )
                             .clickable { showRepeatPicker = true },
                         leadingIcon = {
                             Icon(
@@ -487,8 +536,10 @@ fun AddMedScreen(
                         },
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = LightBlue,
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFF5F5F5),
+                            unfocusedContainerColor = Color(0xFFF5F5F5)
                         )
                     )
                 }
