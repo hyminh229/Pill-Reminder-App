@@ -39,7 +39,7 @@ fun SplashScreen() {
             modifier = Modifier.padding(32.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.pill_reminder_logo),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Pill Reminder Logo",
                 modifier = Modifier.size(150.dp)
             )
