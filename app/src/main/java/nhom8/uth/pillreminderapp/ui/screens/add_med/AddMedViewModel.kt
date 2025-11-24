@@ -107,7 +107,7 @@ class AddMedViewModel @Inject constructor(
      * Update medicine name
      */
     fun updateName(name: String) {
-        _medicineName.value = name.trim()
+        _medicineName.value = name
         _nameError.value = null
     }
     

@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -178,24 +179,23 @@ fun AddMedScreen(
                         )
                         
                         // Intake advice dropdown
-                        Box {
+                        ExposedDropdownMenuBox(
+                            expanded = intakeAdviceExpanded,
+                            onExpandedChange = { intakeAdviceExpanded = !intakeAdviceExpanded }
+                        ) {
                             OutlinedTextField(
                                 value = intakeAdvice,
                                 onValueChange = {},
                                 readOnly = true,
                                 modifier = Modifier
                                     .width(150.dp)
+                                    .menuAnchor()
                                     .background(
                                         color = Color(0xFFF5F5F5),
                                         shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .clickable { intakeAdviceExpanded = true },
+                                    ),
                                 trailingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "Dropdown",
-                                        tint = Color.Gray
-                                    )
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = intakeAdviceExpanded)
                                 },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -205,7 +205,7 @@ fun AddMedScreen(
                                     unfocusedContainerColor = Color(0xFFF5F5F5)
                                 )
                             )
-                            DropdownMenu(
+                            ExposedDropdownMenu(
                                 expanded = intakeAdviceExpanded,
                                 onDismissRequest = { intakeAdviceExpanded = false }
                             ) {
@@ -261,24 +261,24 @@ fun AddMedScreen(
                         )
                         
                         // Unit dropdown
-                        Box(modifier = Modifier.weight(1f)) {
+                        ExposedDropdownMenuBox(
+                            expanded = unitExpanded,
+                            onExpandedChange = { unitExpanded = !unitExpanded },
+                            modifier = Modifier.weight(1f)
+                        ) {
                             OutlinedTextField(
                                 value = unit,
                                 onValueChange = {},
                                 readOnly = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .menuAnchor()
                                     .background(
                                         color = Color(0xFFF5F5F5),
                                         shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .clickable { unitExpanded = true },
+                                    ),
                                 trailingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "Dropdown",
-                                        tint = Color.Gray
-                                    )
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = unitExpanded)
                                 },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -288,7 +288,7 @@ fun AddMedScreen(
                                     unfocusedContainerColor = Color(0xFFF5F5F5)
                                 )
                             )
-                            DropdownMenu(
+                            ExposedDropdownMenu(
                                 expanded = unitExpanded,
                                 onDismissRequest = { unitExpanded = false }
                             ) {
@@ -311,6 +311,15 @@ fun AddMedScreen(
             item {
                 Column {
                     // Start date
+                    val startDateText = remember(startDate) {
+                        val startCal = Calendar.getInstance().apply { time = startDate }
+                        val todayCal = Calendar.getInstance()
+                        when {
+                            isSameDay(startCal, todayCal) -> "Today"
+                            else -> formatDate(startDate)
+                        }
+                    }
+                    
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -323,33 +332,23 @@ fun AddMedScreen(
                             color = Color.Black
                         )
                         
-                        Box {
-                            val startDateText = remember(startDate) {
-                                val startCal = Calendar.getInstance().apply { time = startDate }
-                                val todayCal = Calendar.getInstance()
-                                when {
-                                    isSameDay(startCal, todayCal) -> "Today"
-                                    else -> formatDate(startDate)
-                                }
-                            }
-                            
+                        ExposedDropdownMenuBox(
+                            expanded = startDateOptionExpanded,
+                            onExpandedChange = { startDateOptionExpanded = !startDateOptionExpanded }
+                        ) {
                             OutlinedTextField(
                                 value = startDateText,
                                 onValueChange = {},
                                 readOnly = true,
                                 modifier = Modifier
                                     .width(150.dp)
+                                    .menuAnchor()
                                     .background(
                                         color = Color(0xFFF5F5F5),
                                         shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .clickable { startDateOptionExpanded = true },
+                                    ),
                                 trailingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "Dropdown",
-                                        tint = Color.Gray
-                                    )
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = startDateOptionExpanded)
                                 },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -360,7 +359,7 @@ fun AddMedScreen(
                                 )
                             )
                             
-                            DropdownMenu(
+                            ExposedDropdownMenu(
                                 expanded = startDateOptionExpanded,
                                 onDismissRequest = { startDateOptionExpanded = false }
                             ) {
@@ -385,33 +384,39 @@ fun AddMedScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     
                     // Due date
-                    OutlinedTextField(
-                        value = endDate?.let { formatDate(it) } ?: "",
-                        onValueChange = {},
-                        readOnly = true,
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
                                 color = Color(0xFFF5F5F5),
                                 shape = RoundedCornerShape(12.dp)
                             )
-                            .clickable { showEndDatePicker = true },
-                        placeholder = { Text("Due date") },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.calendar_clock_24),
-                                contentDescription = "Calendar",
-                                tint = Color.Gray
-                            )
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent,
-                            focusedContainerColor = Color(0xFFF5F5F5),
-                            unfocusedContainerColor = Color(0xFFF5F5F5)
-                        )
-                    )
+                            .clickable { showEndDatePicker = true }
+                            .padding(horizontal = 16.dp, vertical = 16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.calendar_clock_24),
+                                    contentDescription = "Calendar",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = endDate?.let { formatDate(it) } ?: "Due date",
+                                    fontSize = 16.sp,
+                                    color = if (endDate != null) Color.Black else Color.Gray.copy(alpha = 0.6f)
+                                )
+                            }
+                        }
+                    }
                 }
             }
             
@@ -508,40 +513,44 @@ fun AddMedScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     // Repeat picker button
-                    OutlinedTextField(
-                        value = repeat,
-                        onValueChange = {},
-                        readOnly = true,
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
                                 color = Color(0xFFF5F5F5),
                                 shape = RoundedCornerShape(12.dp)
                             )
-                            .clickable { showRepeatPicker = true },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.shuffle_24),
-                                contentDescription = "Repeat",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        },
-                        trailingIcon = {
+                            .clickable { showRepeatPicker = true }
+                            .padding(horizontal = 16.dp, vertical = 16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.shuffle_24),
+                                    contentDescription = "Repeat",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = repeat,
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                )
+                            }
                             Icon(
                                 imageVector = Icons.Default.ArrowDropDown,
                                 contentDescription = "Dropdown",
                                 tint = Color.Gray
                             )
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent,
-                            focusedContainerColor = Color(0xFFF5F5F5),
-                            unfocusedContainerColor = Color(0xFFF5F5F5)
-                        )
-                    )
+                        }
+                    }
                 }
             }
             
@@ -775,6 +784,7 @@ fun TimePickerDialog(
  * Repeat Picker Dialog - allows user to select repeat frequency and days of week
  * Design based on Material Design 3 specifications
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepeatPickerDialog(
     currentRepeat: String,
@@ -883,10 +893,12 @@ fun RepeatPickerDialog(
                     Spacer(modifier = Modifier.width(16.dp))
                     
                     // Unit dropdown
-                    Box {
+                    ExposedDropdownMenuBox(
+                        expanded = unitExpanded,
+                        onExpandedChange = { unitExpanded = !unitExpanded }
+                    ) {
                         Row(
-                            modifier = Modifier
-                                .clickable { unitExpanded = true },
+                            modifier = Modifier.menuAnchor(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -902,7 +914,7 @@ fun RepeatPickerDialog(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-                        DropdownMenu(
+                        ExposedDropdownMenu(
                             expanded = unitExpanded,
                             onDismissRequest = { unitExpanded = false }
                         ) {
