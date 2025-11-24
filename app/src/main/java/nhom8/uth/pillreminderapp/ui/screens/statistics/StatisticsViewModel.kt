@@ -97,13 +97,17 @@ class StatisticsViewModel @Inject constructor(
                 val allMedicines = repository.getAllMedicines().first()
                 val medicineMap = allMedicines.associateBy { it.id }
                 
+                // Tính total value (tổng số taken) trước để tính phần trăm
+                val totalTaken = medicineStats.sumOf { it.taken }
+                
                 // Tạo chart data
                 val chartItems = medicineStats.mapIndexed { index, stat ->
                     val medicine = medicineMap[stat.medicineId]
                     val medicineName = medicine?.name ?: "Unknown"
-                    val total = stat.total
-                    val percentage = if (total > 0) (stat.taken.toFloat() / total) * 100f else 0f
                     val color = chartColors.getOrElse(index % chartColors.size) { chartColors[0] }
+                    
+                    // Tính phần trăm dựa trên tổng tất cả thuốc
+                    val percentage = if (totalTaken > 0) (stat.taken.toFloat() / totalTaken) * 100f else 0f
                     
                     ChartItem(
                         medicineName = medicineName,
@@ -113,8 +117,8 @@ class StatisticsViewModel @Inject constructor(
                     )
                 }.sortedByDescending { it.value }
                 
-                // Tính total value (tổng số taken)
-                val total = chartItems.sumOf { it.value }
+                // Total value là tổng số taken
+                val total = totalTaken
                 
                 _chartData.value = chartItems
                 _totalValue.value = total
